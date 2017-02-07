@@ -4,23 +4,39 @@
 #include "cocos2d.h"
 #include "constants.h"
 
+#include <cmath>
+
+enum struct BirdStatus
+{
+	IDLE,
+	FLAPPING,
+};
+
 class Bird : public cocos2d::Sprite
 {
 public:
-	Bird() {};
+	Bird();
 
 	int state;
-	
+
 	static Bird* CreateWithFileName(char* fileName);
-	void Update(float dt);
+
+	void Update(float elapsedTime);
+	void UpdateGravity(float elapsedTime);
+	void Idle(float elapsedTime);
+	void RotateBird(float elapsedTime, cocos2d::Vec2 const& movement);
+	void Jump();
+
 	void Reset();
 	void SetStartSpeed();
 	void SetParams(float tos);
 	cocos2d::Rect TubeCollisionBox();
 
 private:
-	float m_speedY;
+	BirdStatus m_status;
+	float m_speed;
 	float m_topOfScreen;
+	float m_idleAnimTime;
 
 };
 

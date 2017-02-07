@@ -5,8 +5,10 @@
 #include "constants.h"
 
 #include "bird.h"
+#include "background.h"
+#include <fstream>
 
-class HelloWorld : public cocos2d::Layer
+class GameScene : public cocos2d::Layer
 {
 public:
 	static cocos2d::Scene* createScene();
@@ -14,10 +16,16 @@ public:
 	virtual bool init();
 
 	// implement the "static create()" method manually
-	CREATE_FUNC(HelloWorld);
+	CREATE_FUNC(GameScene);
 
 private:
 	Bird* m_bird;
+	Background* m_background;
+
+	std::ofstream output;
+
+	bool OnTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
+	void GameUpdate(float dt);
 
 };
 
