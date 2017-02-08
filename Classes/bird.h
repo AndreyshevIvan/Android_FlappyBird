@@ -12,31 +12,31 @@ enum struct BirdStatus
 	FLAPPING,
 };
 
-class Bird : public cocos2d::Sprite
+class Bird
 {
 public:
-	Bird();
-
-	int state;
-
-	static Bird* CreateWithFileName(char* fileName);
+	void Init(cocos2d::Layer* layer);
 
 	void Update(float elapsedTime);
-	void UpdateGravity(float elapsedTime);
 	void Idle(float elapsedTime);
-	void RotateBird(float elapsedTime, cocos2d::Vec2 const& movement);
 	void Jump();
 
+	cocos2d::PhysicsBody* GetBody();
 	void Reset();
-	void SetStartSpeed();
-	void SetParams(float tos);
-	cocos2d::Rect TubeCollisionBox();
 
 private:
+	cocos2d::Sprite* m_body;
 	BirdStatus m_status;
 	float m_speed;
 	float m_topOfScreen;
 	float m_idleAnimTime;
+	float m_flappingAnimTime;
+
+	std::ofstream m_log;
+
+	void UpdateGravity(float elapsedTime);
+	void RotateBird(float elapsedTime, cocos2d::Vec2 const& movement);
+	void FlappingAnimate(float elapsedTime);
 
 };
 

@@ -3,28 +3,33 @@
 
 USING_NS_CC;
 
-Bird::Bird()
-{
-	m_status = BirdStatus::FLAPPING;
-	m_speed = 0;
-	m_idleAnimTime = 0;
-}
 
-Bird* Bird::CreateWithFileName(char* fileName)
+void Bird::Init(Layer* layer)
 {
-	auto sprite = new Bird;
-	if (sprite && sprite->initWithFile(fileName))
-	{
-		sprite->autorelease();
-		return sprite;
-	}
+	//m_log.open("out.txt");
 
-	CC_SAFE_DELETE(sprite);
-	return nullptr;
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 center = Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f);
+
+	m_body = Sprite::create("bird.png");
+	const float bodyWidth = m_body->getContentSize().width / (float)BIRD_FRAMES;
+	const float bodyHeight = m_body->getContentSize().height;
+	m_body->setContentSize(Size(bodyWidth, bodyHeight));
+
+	auto physBody = PhysicsBody::createCircle(m_body->getContentSize().height / 2.0f);
+	physBody->setCollisionBitmask(1);
+	physBody->setContactTestBitmask(true);
+	physBody->setDynamic(false);
+	m_body->setPhysicsBody(physBody);
+
+	layer->addChild(m_body, BIRD_Z_INDEX);
+
+	this->Reset();
 }
 
 void Bird::Update(float elapsedTime)
 {
+	//m_log << m_body->getRotation() << "\n";
 	if (m_status == BirdStatus::IDLE)
 	{
 		Idle(elapsedTime);
@@ -34,7 +39,7 @@ void Bird::Update(float elapsedTime)
 		UpdateGravity(elapsedTime);
 	}
 
-	//FlappingAnimate(elapsedTime);
+	FlappingAnimate(elapsedTime);
 }
 
 void Bird::UpdateGravity(float elapsedTime)
@@ -45,14 +50,14 @@ void Bird::UpdateGravity(float elapsedTime)
 	movement.y = m_speed * elapsedTime;
 	movement.y *= IMPULSE;
 
-	if (this->getPosition().y > BIRD_MAX_HEIGHT)
+	if (m_body->getPosition().y > BIRD_MAX_HEIGHT)
 	{
-		this->setPosition(this->getPosition().x, BIRD_MAX_HEIGHT);
+		m_body->setPosition(m_body->getPosition().x, BIRD_MAX_HEIGHT);
 	}
 
-	this->setPosition(this->getPosition() - movement);
+	m_body->setPosition(m_body->getPosition() - movement);
 
-	this->RotateBird(elapsedTime, movement);
+	RotateBird(elapsedTime, movement);
 }
 
 void Bird::Idle(float elapsedTime)
@@ -66,7 +71,7 @@ void Bird::Idle(float elapsedTime)
 	}
 
 	Vec2 movement(0, OSCILLATION_AMPLITUDE * sin(FLAPPING_SPEED * m_idleAnimTime));
-	this->setPosition(this->getPosition() - movement);
+	m_body->setPosition(m_body->getPosition() - movement);
 }
 
 void Bird::Jump()
@@ -75,41 +80,56 @@ void Bird::Jump()
 	m_speed = -BIRD_JUMP_SPEED;
 }
 
+void Bird::FlappingAnimate(float elapsedTime)
+{
+	m_flappingAnimTime += FLAPPING_SPEED * elapsedTime;
+
+	if (static_cast<int>(m_flappingAnimTime) > 2)
+	{
+		m_flappingAnimTime = 0;
+	}
+
+	int frameNumber = static_cast<int>(m_flappingAnimTime);
+	float frameWidth = m_body->getContentSize().width;
+	float frameHeight = m_body->getContentSize().height;
+
+	cocos2d::Rect textureArea(frameNumber * frameWidth, 0, frameWidth, frameHeight);
+	m_body->setTextureRect(textureArea);
+}
+
+PhysicsBody* Bird::GetBody()
+{
+	return m_body->getPhysicsBody();
+}
+
 void Bird::Reset()
 {
+	m_log << "===RESET===\n";
+	Vec2 visibleSize = Director::getInstance()->getVisibleSize();
 
-}
+	m_status = BirdStatus::IDLE;
+	m_speed = 0;
+	m_idleAnimTime = 0;
+	m_body->setRotation(0);
 
-void Bird::SetStartSpeed()
-{
-
-}
-
-void Bird::SetParams(float tos)
-{
-
-}
-
-cocos2d::Rect Bird::TubeCollisionBox()
-{
-	return this->getBoundingBox();
+	m_body->setPosition(BIRD_POS_X_FACTOR * visibleSize.x, visibleSize.y / 2.0f);
 }
 
 void Bird::RotateBird(float elapsedTime, Vec2 const& movement)
 {
 	if (movement.y < 0)
 	{
-		this->setRotation(UP_ROT_ANGALE);
+		m_body->setRotation(UP_ROT_ANGALE);
 	}
-	else if (this->getRotation() != DOWN_ROT_ANGLE)
+	else if (m_body->getRotation() != DOWN_ROT_ANGLE)
 	{
 		auto rotation = DOWN_ROT_SPEED * elapsedTime;
-		this->setRotation(this->getRotation() + rotation);
-		const float bodyRotation = this->getRotation();
+		m_body->setRotation(m_body->getRotation() + rotation);
+		const float bodyRotation = m_body->getRotation();
 
 		if (bodyRotation < 360 + UP_ROT_ANGALE && bodyRotation > DOWN_ROT_ANGLE)
 		{
-			this->setRotation(DOWN_ROT_ANGLE);
+			m_body->setRotation(DOWN_ROT_ANGLE);
 		}
 	}
 }

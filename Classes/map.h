@@ -7,18 +7,27 @@
 #include "constants.h"
 #include <vector>
 
-class Background
+class GameMap
 {
 public:
 	void Init(cocos2d::Layer* layer);
 	void Update(float elapsedTime);
 
-private:
-	std::vector<cocos2d::Sprite*> m_grounds;
+	cocos2d::Rect GetGroundBox();
 
-	void InitGrounds(cocos2d::Layer* layer);
+private:
+	cocos2d::Sprite* m_background;
+	cocos2d::Sprite* m_city;
+	cocos2d::Sprite* m_ground;
+	std::vector<cocos2d::Sprite*> m_tubes;
+
+	void InitGround(cocos2d::Layer* layer);
+	void InitTubes(cocos2d::Layer* layer);
 
 	void UpdateGround(float elapsedTime);
+	void UpdateTubes(float elapsedTime);
+
+	std::ofstream m_log;
 };
 
 #endif // __BACKGROUND_SCENE_H__

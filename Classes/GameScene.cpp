@@ -5,8 +5,11 @@ USING_NS_CC;
 
 Scene* GameScene::createScene()
 {
-	auto scene = Scene::create();
+	auto scene = Scene::createWithPhysics();
+	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+
 	auto layer = GameScene::create();
+	layer->SetPhysicsWorld(scene->getPhysicsWorld());
 
 	scene->addChild(layer);
 
@@ -20,37 +23,64 @@ bool GameScene::init()
 		return false;
 	}
 
-	output.open("out.txt");
+	//m_log.open("out.txt");
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	Vec2 center = Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f);
 
-	m_background->Init(this);
+	m_background.Init(this);
+	m_bird.Init(this);
 
-	m_bird = Bird::CreateWithFileName("one_bird.png");
-	m_bird->setPosition(BIRD_POS_X_FACTOR * visibleSize.width, center.y);
-	m_bird->setContentSize(BIRD_SIZE);
+	auto collideListener = EventListenerPhysicsContact::create();
+	collideListener->onContactBegin = CC_CALLBACK_1(GameScene::IsBirdCollideAny, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(collideListener, this);
 
-	this->addChild(m_bird, BIRD_Z_INDEX);
-
-	auto listener = EventListenerTouchOneByOne::create();
-	listener->setSwallowTouches(true);
-	listener->onTouchBegan = CC_CALLBACK_2(GameScene::OnTouchBegan, this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+	auto touchListener = EventListenerTouchOneByOne::create();
+	touchListener->setSwallowTouches(true);
+	touchListener->onTouchBegan = CC_CALLBACK_2(GameScene::IsScreenTouched, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
 	schedule(schedule_selector(GameScene::GameUpdate));
 
 	return true;
 }
 
-bool GameScene::OnTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
+bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 {
-	m_bird->Jump();
+	if (IsCollideWithGround(contact))
+	{
+		m_bird.Reset();
+		return true;
+	}
+
+	return false;
+}
+
+bool GameScene::IsCollideWithGround(cocos2d::PhysicsContact& contact)
+{
+	//m_log << "Check collide!";
+
+	PhysicsBody* bodyA = contact.getShapeA()->getBody();
+	PhysicsBody* bodyB = contact.getShapeB()->getBody();
+
+	if ((bodyA->getContactTestBitmask() == BIRD_COLLISION_BITMASK && bodyB->getContactTestBitmask() == GROUND_COLLISION_BITMASK) ||
+		(bodyA->getContactTestBitmask() == GROUND_COLLISION_BITMASK && bodyB->getContactTestBitmask() == BIRD_COLLISION_BITMASK))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool GameScene::IsScreenTouched(cocos2d::Touch* touch, cocos2d::Event* event)
+{
+	m_bird.Jump();
 	return true;
 }
 
-void GameScene::GameUpdate(float dt)
+void GameScene::GameUpdate(float elapsedTime)
 {
-	m_bird->Update(dt);
+	m_bird.Update(elapsedTime);
+	m_background.Update(elapsedTime);
 }

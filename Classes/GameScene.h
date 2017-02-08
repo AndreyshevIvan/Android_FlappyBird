@@ -5,8 +5,7 @@
 #include "constants.h"
 
 #include "bird.h"
-#include "background.h"
-#include <fstream>
+#include "map.h"
 
 class GameScene : public cocos2d::Layer
 {
@@ -19,13 +18,19 @@ public:
 	CREATE_FUNC(GameScene);
 
 private:
-	Bird* m_bird;
-	Background* m_background;
+	cocos2d::PhysicsWorld* sceneWorld;
+	void SetPhysicsWorld(cocos2d::PhysicsWorld* world) { sceneWorld = world; };
 
-	std::ofstream output;
+	Bird m_bird;
+	GameMap m_background;
+	std::ofstream m_log;
 
-	bool OnTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
+	bool IsBirdCollideAny(cocos2d::PhysicsContact& contact);
+	bool IsScreenTouched(cocos2d::Touch* touch, cocos2d::Event* event);
+
 	void GameUpdate(float dt);
+
+	bool IsCollideWithGround(cocos2d::PhysicsContact& contact);
 
 };
 
