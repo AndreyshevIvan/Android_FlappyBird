@@ -27,15 +27,11 @@ public:
 private:
 	cocos2d::Sprite* m_body;
 	BirdStatus m_status;
-	float m_speed;
 	float m_topOfScreen;
 	float m_idleAnimTime;
 	float m_flappingAnimTime;
 
-	std::ofstream m_log;
-
-	void UpdateGravity(float elapsedTime);
-	void RotateBird(float elapsedTime, cocos2d::Vec2 const& movement);
+	void RotateBird(float elapsedTime);
 	void FlappingAnimate(float elapsedTime);
 
 };

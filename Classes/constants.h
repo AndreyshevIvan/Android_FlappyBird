@@ -38,9 +38,6 @@ const float BIRD_MAX_HEIGHT = 1280;
 const int BIRD_FRAMES = 3;
 const float BIRD_POS_X_FACTOR = 0.2f;
 
-const float BIRD_JUMP_HEIGHT = 128;
-const float BIRD_JUMP_SPEED = sqrt((2.0f * BIRD_JUMP_HEIGHT) / G);
-
 const float FLAPPING_SPEED = 15;
 const float OSCILLATION_AMPLITUDE = 3;
 

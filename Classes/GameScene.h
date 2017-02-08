@@ -23,6 +23,7 @@ private:
 
 	Bird m_bird;
 	GameMap m_background;
+	std::vector<cocos2d::PhysicsBody*> m_tubesBodies;
 	std::ofstream m_log;
 
 	bool IsBirdCollideAny(cocos2d::PhysicsContact& contact);
@@ -31,6 +32,7 @@ private:
 	void GameUpdate(float dt);
 
 	bool IsCollideWithGround(cocos2d::PhysicsContact& contact);
+	bool IsCollideWithTube(cocos2d::PhysicsContact& contact);
 
 };
 

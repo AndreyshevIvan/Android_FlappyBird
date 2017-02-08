@@ -13,7 +13,8 @@ public:
 	void Init(cocos2d::Layer* layer);
 	void Update(float elapsedTime);
 
-	cocos2d::Rect GetGroundBox();
+	cocos2d::PhysicsBody* GetGroundBody();
+	std::vector<cocos2d::PhysicsBody*> GetTubesBodies();
 
 private:
 	cocos2d::Sprite* m_background;

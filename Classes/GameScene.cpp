@@ -7,6 +7,7 @@ Scene* GameScene::createScene()
 {
 	auto scene = Scene::createWithPhysics();
 	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+	scene->getPhysicsWorld()->setGravity(Vect(0, -900));
 
 	auto layer = GameScene::create();
 	layer->SetPhysicsWorld(scene->getPhysicsWorld());
@@ -22,8 +23,8 @@ bool GameScene::init()
 	{
 		return false;
 	}
-
-	//m_log.open("out.txt");
+	
+	m_log.open("out.txt");
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -31,6 +32,14 @@ bool GameScene::init()
 
 	m_background.Init(this);
 	m_bird.Init(this);
+
+	m_tubesBodies = m_background.GetTubesBodies();
+
+	auto mapEdge = PhysicsBody::createEdgeBox(visibleSize);
+	auto edgeNode = Node::create();
+	edgeNode->addComponent(mapEdge);
+	edgeNode->setPosition(center);
+	this->addChild(edgeNode);
 
 	auto collideListener = EventListenerPhysicsContact::create();
 	collideListener->onContactBegin = CC_CALLBACK_1(GameScene::IsBirdCollideAny, this);
@@ -48,8 +57,9 @@ bool GameScene::init()
 
 bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 {
-	if (IsCollideWithGround(contact))
+	if (IsCollideWithGround(contact) || IsCollideWithTube(contact))
 	{
+		m_log << "Collide";
 		m_bird.Reset();
 		return true;
 	}
@@ -59,15 +69,35 @@ bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 
 bool GameScene::IsCollideWithGround(cocos2d::PhysicsContact& contact)
 {
-	//m_log << "Check collide!";
-
 	PhysicsBody* bodyA = contact.getShapeA()->getBody();
 	PhysicsBody* bodyB = contact.getShapeB()->getBody();
 
-	if ((bodyA->getContactTestBitmask() == BIRD_COLLISION_BITMASK && bodyB->getContactTestBitmask() == GROUND_COLLISION_BITMASK) ||
-		(bodyA->getContactTestBitmask() == GROUND_COLLISION_BITMASK && bodyB->getContactTestBitmask() == BIRD_COLLISION_BITMASK))
+	auto birdBody = m_bird.GetBody();
+	auto groundBody = m_background.GetGroundBody();
+
+	if ((bodyA == birdBody && bodyB == groundBody) ||
+		(bodyA == groundBody && bodyB == birdBody))
 	{
 		return true;
+	}
+
+	return false;
+}
+
+bool GameScene::IsCollideWithTube(cocos2d::PhysicsContact& contact)
+{
+	PhysicsBody* bodyA = contact.getShapeA()->getBody();
+	PhysicsBody* bodyB = contact.getShapeB()->getBody();
+
+	auto birdBody = m_bird.GetBody();
+
+	for (auto tubeBody : m_tubesBodies)
+	{
+		if ((bodyA == birdBody && bodyB == tubeBody) ||
+			(bodyA == tubeBody && bodyB == birdBody))
+		{
+			return true;
+		}
 	}
 
 	return false;

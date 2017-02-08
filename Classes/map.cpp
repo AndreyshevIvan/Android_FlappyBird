@@ -125,7 +125,19 @@ void GameMap::UpdateTubes(float elapsedTime)
 	}
 }
 
-cocos2d::Rect GameMap::GetGroundBox()
+cocos2d::PhysicsBody* GameMap::GetGroundBody()
 {
-	return m_ground->getBoundingBox();
+	return m_ground->getPhysicsBody();
+}
+
+std::vector<cocos2d::PhysicsBody*> GameMap::GetTubesBodies()
+{
+	std::vector<cocos2d::PhysicsBody*> bodies;
+
+	for (auto tube : m_tubes)
+	{
+		bodies.push_back(tube->getPhysicsBody());
+	}
+
+	return bodies;
 }

@@ -6,8 +6,6 @@ USING_NS_CC;
 
 void Bird::Init(Layer* layer)
 {
-	//m_log.open("out.txt");
-
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 center = Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f);
 
@@ -29,35 +27,13 @@ void Bird::Init(Layer* layer)
 
 void Bird::Update(float elapsedTime)
 {
-	//m_log << m_body->getRotation() << "\n";
 	if (m_status == BirdStatus::IDLE)
 	{
 		Idle(elapsedTime);
 	}
-	else if (m_status == BirdStatus::FLAPPING)
-	{
-		UpdateGravity(elapsedTime);
-	}
 
 	FlappingAnimate(elapsedTime);
-}
-
-void Bird::UpdateGravity(float elapsedTime)
-{
-	Vec2 movement = Vec2(0, m_speed);
-
-	m_speed = m_speed + G * elapsedTime;
-	movement.y = m_speed * elapsedTime;
-	movement.y *= IMPULSE;
-
-	if (m_body->getPosition().y > BIRD_MAX_HEIGHT)
-	{
-		m_body->setPosition(m_body->getPosition().x, BIRD_MAX_HEIGHT);
-	}
-
-	m_body->setPosition(m_body->getPosition() - movement);
-
-	RotateBird(elapsedTime, movement);
+	RotateBird(elapsedTime);
 }
 
 void Bird::Idle(float elapsedTime)
@@ -77,7 +53,8 @@ void Bird::Idle(float elapsedTime)
 void Bird::Jump()
 {
 	m_status = BirdStatus::FLAPPING;
-	m_speed = -BIRD_JUMP_SPEED;
+	m_body->getPhysicsBody()->setDynamic(true);
+	m_body->getPhysicsBody()->setVelocity(Vec2(0, 500));
 }
 
 void Bird::FlappingAnimate(float elapsedTime)
@@ -104,32 +81,16 @@ PhysicsBody* Bird::GetBody()
 
 void Bird::Reset()
 {
-	m_log << "===RESET===\n";
 	Vec2 visibleSize = Director::getInstance()->getVisibleSize();
 
 	m_status = BirdStatus::IDLE;
-	m_speed = 0;
 	m_idleAnimTime = 0;
-	m_body->setRotation(0);
 
+	m_body->setRotation(0);
 	m_body->setPosition(BIRD_POS_X_FACTOR * visibleSize.x, visibleSize.y / 2.0f);
 }
 
-void Bird::RotateBird(float elapsedTime, Vec2 const& movement)
+void Bird::RotateBird(float elapsedTime)
 {
-	if (movement.y < 0)
-	{
-		m_body->setRotation(UP_ROT_ANGALE);
-	}
-	else if (m_body->getRotation() != DOWN_ROT_ANGLE)
-	{
-		auto rotation = DOWN_ROT_SPEED * elapsedTime;
-		m_body->setRotation(m_body->getRotation() + rotation);
-		const float bodyRotation = m_body->getRotation();
 
-		if (bodyRotation < 360 + UP_ROT_ANGALE && bodyRotation > DOWN_ROT_ANGLE)
-		{
-			m_body->setRotation(DOWN_ROT_ANGLE);
-		}
-	}
 }
