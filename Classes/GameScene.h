@@ -8,6 +8,7 @@
 
 #include "bird.h"
 #include "map.h"
+#include "interface.h"
 
 enum struct GameBehavior
 {
@@ -23,14 +24,14 @@ public:
 
 	virtual bool init();
 
-	// implement the "static create()" method manually
 	CREATE_FUNC(GameScene);
 
 private:
-	cocos2d::PhysicsWorld* sceneWorld;
 	GameBehavior m_behavior;
+	cocos2d::PhysicsWorld* sceneWorld;
 	Bird m_bird;
 	GameMap m_background;
+	GameInterface m_interface;
 	std::vector<cocos2d::PhysicsBody*> m_tubesBodies;
 	std::ofstream m_log;
 

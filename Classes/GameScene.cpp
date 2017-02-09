@@ -3,11 +3,13 @@
 
 USING_NS_CC;
 
+const float WORLD_GRAVITY = 2400;
+
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::createWithPhysics();
 	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
-	scene->getPhysicsWorld()->setGravity(Vect(0, -1200));
+	scene->getPhysicsWorld()->setGravity(Vect(0, -WORLD_GRAVITY));
 
 	auto layer = GameScene::create();
 	layer->SetPhysicsWorld(scene->getPhysicsWorld());
@@ -23,8 +25,6 @@ bool GameScene::init()
 	{
 		return false;
 	}
-	
-	m_log.open("out.txt");
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -32,8 +32,9 @@ bool GameScene::init()
 
 	m_background.Init(this);
 	m_bird.Init(this);
+	m_interface.Init(this);
 
-	m_tubesBodies = m_background.GetTubesBodies();
+	//m_tubesBodies = m_background.GetTubesBodies();
 	SetBehavoir(GameBehavior::START);
 
 	auto mapEdge = PhysicsBody::createEdgeBox(visibleSize);
@@ -70,11 +71,14 @@ void GameScene::SetBehavoir(GameBehavior newBehavior)
 	case GameBehavior::START:
 		m_bird.Reset();
 		m_background.Reset();
+		m_interface.Reset();
 		break;
 	case GameBehavior::GAMEPLAY:
+		m_interface.SetGameplayUI();
 		break;
 	case GameBehavior::GAMEOVER:
-		m_bird.Freze();
+		m_interface.SetGameoverUI();
+		m_bird.Death();
 		break;
 	default:
 		break;
@@ -116,7 +120,7 @@ bool GameScene::IsCollideWithTube(cocos2d::PhysicsContact& contact)
 
 	auto birdBody = m_bird.GetBody();
 
-	for (auto tubeBody : m_tubesBodies)
+	for (auto tubeBody : m_background.GetTubesBodies())
 	{
 		if ((bodyA == birdBody && bodyB == tubeBody) ||
 			(bodyA == tubeBody && bodyB == birdBody))
@@ -152,17 +156,15 @@ bool GameScene::IsScreenTouched(cocos2d::Touch* touch, cocos2d::Event* event)
 void GameScene::GameUpdate(float elapsedTime)
 {
 	m_bird.Update(elapsedTime);
+	m_interface.Update(elapsedTime, m_bird.GetPos());
 
-	switch (m_behavior)
+	if (m_behavior == GameBehavior::GAMEPLAY)
 	{
-	case GameBehavior::START:
-		break;
-	case GameBehavior::GAMEPLAY:
 		m_background.Update(elapsedTime);
-		break;
-	case GameBehavior::GAMEOVER:
-		break;
-	default:
-		break;
+	}
+
+	if (m_interface.GetPointsCount() == POINTS_MAX)
+	{
+		SetBehavoir(GameBehavior::GAMEOVER);
 	}
 }

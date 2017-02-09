@@ -109,7 +109,7 @@ void GameMap::UpdateTubes(float elapsedTime)
 
 		if (tubePos.x + topTube->getContentSize().width / 2.0f <= 0)
 		{
-			this->ResetTubes(topTube, bottomTube);
+			ResetTubes(topTube, bottomTube);
 		}
 
 		Vec2 movement = Vec2(SPEED * elapsedTime, 0);
