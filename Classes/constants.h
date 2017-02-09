@@ -25,10 +25,12 @@ const float GROUND_OFFSET = 446;
 const int TUBE_Z_INDEX = 3;
 const int TUBE_COLLISION_BITMASK = 0x00001;
 const size_t TUBES_COUNT = 3;
-const float TUBES_OFFSET = 400;
+const float TUBES_BETWEEN_OFFSET = 400;
+const float TUBE_RESET_OFFSET = TUBES_BETWEEN_OFFSET * TUBES_COUNT;
+const float TUBES_START_OFFSET = 256;
 const float LOWER_SCREEN_TUBE_THRESHOLD = 0.40f;
 const float UPPER_SCREEN_TUBE_THRESHOLD = 0.80f;
-const float PIPE_GAP = 300;
+const float TUBE_GAP = 300;
 
 // BIRD
 const int BIRD_COLLISION_BITMASK = 0x00001;

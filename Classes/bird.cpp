@@ -17,7 +17,8 @@ void Bird::Init(Layer* layer)
 	auto physBody = PhysicsBody::createCircle(m_body->getContentSize().height / 2.0f);
 	physBody->setCollisionBitmask(1);
 	physBody->setContactTestBitmask(true);
-	physBody->setDynamic(false);
+	physBody->setRotationEnable(false);
+	physBody->setDynamic(true);
 	m_body->setPhysicsBody(physBody);
 
 	layer->addChild(m_body, BIRD_Z_INDEX);
@@ -53,8 +54,14 @@ void Bird::Idle(float elapsedTime)
 void Bird::Jump()
 {
 	m_status = BirdStatus::FLAPPING;
-	m_body->getPhysicsBody()->setDynamic(true);
-	m_body->getPhysicsBody()->setVelocity(Vec2(0, 500));
+	m_body->getPhysicsBody()->setGravityEnable(true);
+	m_body->getPhysicsBody()->setVelocity(Vec2(0, 600));
+}
+
+void Bird::Freze()
+{
+	m_body->getPhysicsBody()->setGravityEnable(false);
+	m_body->getPhysicsBody()->onExit();
 }
 
 void Bird::FlappingAnimate(float elapsedTime)
@@ -86,7 +93,9 @@ void Bird::Reset()
 	m_status = BirdStatus::IDLE;
 	m_idleAnimTime = 0;
 
-	m_body->setRotation(0);
+	m_body->getPhysicsBody()->setGravityEnable(false);
+	m_body->getPhysicsBody()->setVelocity(Vec2::ZERO);
+	m_body->getPhysicsBody()->onEnter();
 	m_body->setPosition(BIRD_POS_X_FACTOR * visibleSize.x, visibleSize.y / 2.0f);
 }
 

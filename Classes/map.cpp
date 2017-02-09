@@ -22,6 +22,8 @@ void GameMap::Init(Layer* layer)
 
 	InitGround(layer);
 	InitTubes(layer);
+
+	this->Reset();
 }
 
 void GameMap::InitGround(Layer* layer)
@@ -56,11 +58,6 @@ void GameMap::InitTubes(Layer* layer)
 		auto topPipeBody = PhysicsBody::createBox(topPipe->getContentSize());
 		auto bottomPipeBody = PhysicsBody::createBox(bottomPipe->getContentSize());
 
-		const float MIN_PIPE_HEIGHT = visibleSize.height * LOWER_SCREEN_TUBE_THRESHOLD;
-		const float MAX_PIPE_HEIGHT = visibleSize.height * UPPER_SCREEN_TUBE_THRESHOLD;
-		const float PIPE_HEIGHT_RANGE = MAX_PIPE_HEIGHT - MIN_PIPE_HEIGHT;
-		const float TOP_PIPE_HEIGHT = PIPE_HEIGHT_RANGE * CCRANDOM_0_1() + MIN_PIPE_HEIGHT;
-
 		topPipeBody->setDynamic(false);
 		bottomPipeBody->setDynamic(false);
 
@@ -72,11 +69,6 @@ void GameMap::InitTubes(Layer* layer)
 
 		topPipe->setPhysicsBody(topPipeBody);
 		bottomPipe->setPhysicsBody(bottomPipeBody);
-
-		auto pipePosX = visibleSize.width + PIPE_WIDTH / 2.0f + TUBES_OFFSET * i;
-
-		topPipe->setPosition(Point(pipePosX, TOP_PIPE_HEIGHT));
-		bottomPipe->setPosition(Point(pipePosX, topPipe->getPositionY() - PIPE_GAP));
 
 		m_tubes.push_back(topPipe);
 		m_tubes.push_back(bottomPipe);
@@ -108,20 +100,21 @@ void GameMap::UpdateGround(float elapsedTime)
 
 void GameMap::UpdateTubes(float elapsedTime)
 {
-	const Vec2 restartOffset = Vec2(TUBES_OFFSET * TUBES_COUNT, 0);
-
-	for (auto tube : m_tubes)
+	for (size_t tubeNum = 0; tubeNum != m_tubes.size(); tubeNum += 2)
 	{
-		const Vec2 tubePos = tube->getPosition();
+		auto topTube = m_tubes[tubeNum];
+		auto bottomTube = m_tubes[tubeNum + 1];
 
-		if (tubePos.x + tube->getContentSize().width / 2.0f <= 0)
+		auto tubePos = m_tubes[tubeNum]->getPosition();
+
+		if (tubePos.x + topTube->getContentSize().width / 2.0f <= 0)
 		{
-			tube->setPosition(tubePos + restartOffset);
-			m_log << tubePos.x << "\n";
+			this->ResetTubes(topTube, bottomTube);
 		}
 
 		Vec2 movement = Vec2(SPEED * elapsedTime, 0);
-		tube->setPosition(tube->getPosition() - movement);
+		topTube->setPosition(topTube->getPosition() - movement);
+		bottomTube->setPosition(bottomTube->getPosition() - movement);
 	}
 }
 
@@ -140,4 +133,44 @@ std::vector<cocos2d::PhysicsBody*> GameMap::GetTubesBodies()
 	}
 
 	return bodies;
+}
+
+void GameMap::Reset()
+{
+	const Size visibleSize = Director::getInstance()->getVisibleSize();
+	const float halfTubeWidth = m_tubes.front()->getContentSize().width / 2.0f;
+	const float instantPosX = visibleSize.width + halfTubeWidth + TUBES_START_OFFSET;
+
+	for (size_t tubeNum = 0; tubeNum != m_tubes.size(); tubeNum += 2)
+	{
+		const float pairOffset = TUBES_BETWEEN_OFFSET * tubeNum / 2.0f;
+
+		auto topTube = m_tubes[tubeNum];
+		auto bottomTube = m_tubes[tubeNum + 1];
+
+		topTube->setPosition(Point(instantPosX + pairOffset, this->GetHeight()));
+		bottomTube->setPosition(Point(instantPosX + pairOffset, topTube->getPositionY() - TUBE_GAP));
+	}
+}
+
+float GameMap::GetHeight()
+{
+	const Size winSize = Director::getInstance()->getVisibleSize();
+	const float minHeight = winSize.height * LOWER_SCREEN_TUBE_THRESHOLD;
+	const float maxHeight = winSize.height * UPPER_SCREEN_TUBE_THRESHOLD;
+	const float heightRange = maxHeight - minHeight;
+
+	return heightRange * CCRANDOM_0_1() + minHeight;
+}
+
+void GameMap::ResetTubes(Sprite* topTube, Sprite* bottomTube)
+{
+	const float oldPosX = topTube->getPosition().x;
+	const float newTopHeight = this->GetHeight();
+
+	const Vec2 newTopPos = Vec2(TUBE_RESET_OFFSET + oldPosX, newTopHeight);
+	const Vec2 newbottomPos = Vec2(TUBE_RESET_OFFSET + oldPosX, newTopHeight - TUBE_GAP);
+
+	topTube->setPosition(newTopPos);
+	bottomTube->setPosition(newbottomPos);
 }

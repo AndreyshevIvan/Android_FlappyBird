@@ -23,6 +23,7 @@ public:
 
 	cocos2d::PhysicsBody* GetBody();
 	void Reset();
+	void Freze();
 
 private:
 	cocos2d::Sprite* m_body;

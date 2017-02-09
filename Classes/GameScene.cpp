@@ -7,7 +7,7 @@ Scene* GameScene::createScene()
 {
 	auto scene = Scene::createWithPhysics();
 	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
-	scene->getPhysicsWorld()->setGravity(Vect(0, -900));
+	scene->getPhysicsWorld()->setGravity(Vect(0, -1200));
 
 	auto layer = GameScene::create();
 	layer->SetPhysicsWorld(scene->getPhysicsWorld());
@@ -34,6 +34,7 @@ bool GameScene::init()
 	m_bird.Init(this);
 
 	m_tubesBodies = m_background.GetTubesBodies();
+	SetBehavoir(GameBehavior::START);
 
 	auto mapEdge = PhysicsBody::createEdgeBox(visibleSize);
 	auto edgeNode = Node::create();
@@ -42,7 +43,7 @@ bool GameScene::init()
 	this->addChild(edgeNode);
 
 	auto collideListener = EventListenerPhysicsContact::create();
-	collideListener->onContactBegin = CC_CALLBACK_1(GameScene::IsBirdCollideAny, this);
+	collideListener->onContactBegin = CC_CALLBACK_1(GameScene::IsBirdFell, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(collideListener, this);
 
 	auto touchListener = EventListenerTouchOneByOne::create();
@@ -55,12 +56,36 @@ bool GameScene::init()
 	return true;
 }
 
-bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
+void GameScene::SetPhysicsWorld(cocos2d::PhysicsWorld* world)
+{
+	sceneWorld = world;
+}
+
+void GameScene::SetBehavoir(GameBehavior newBehavior)
+{
+	m_behavior = newBehavior;
+
+	switch (newBehavior)
+	{
+	case GameBehavior::START:
+		m_bird.Reset();
+		m_background.Reset();
+		break;
+	case GameBehavior::GAMEPLAY:
+		break;
+	case GameBehavior::GAMEOVER:
+		m_bird.Freze();
+		break;
+	default:
+		break;
+	}
+}
+
+bool GameScene::IsBirdFell(PhysicsContact& contact)
 {
 	if (IsCollideWithGround(contact) || IsCollideWithTube(contact))
 	{
-		m_log << "Collide";
-		m_bird.Reset();
+		SetBehavoir(GameBehavior::GAMEOVER);
 		return true;
 	}
 
@@ -105,12 +130,39 @@ bool GameScene::IsCollideWithTube(cocos2d::PhysicsContact& contact)
 
 bool GameScene::IsScreenTouched(cocos2d::Touch* touch, cocos2d::Event* event)
 {
-	m_bird.Jump();
+	switch (m_behavior)
+	{
+	case GameBehavior::START:
+		SetBehavoir(GameBehavior::GAMEPLAY);
+		m_bird.Jump();
+		break;
+	case GameBehavior::GAMEPLAY:
+		m_bird.Jump();
+		break;
+	case GameBehavior::GAMEOVER:
+		SetBehavoir(GameBehavior::START);
+		break;
+	default:
+		break;
+	}
+
 	return true;
 }
 
 void GameScene::GameUpdate(float elapsedTime)
 {
 	m_bird.Update(elapsedTime);
-	m_background.Update(elapsedTime);
+
+	switch (m_behavior)
+	{
+	case GameBehavior::START:
+		break;
+	case GameBehavior::GAMEPLAY:
+		m_background.Update(elapsedTime);
+		break;
+	case GameBehavior::GAMEOVER:
+		break;
+	default:
+		break;
+	}
 }

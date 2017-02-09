@@ -16,6 +16,8 @@ public:
 	cocos2d::PhysicsBody* GetGroundBody();
 	std::vector<cocos2d::PhysicsBody*> GetTubesBodies();
 
+	void Reset();
+
 private:
 	cocos2d::Sprite* m_background;
 	cocos2d::Sprite* m_city;
@@ -27,6 +29,9 @@ private:
 
 	void UpdateGround(float elapsedTime);
 	void UpdateTubes(float elapsedTime);
+
+	float GetHeight();
+	void ResetTubes(cocos2d::Sprite* topTube, cocos2d::Sprite* bottomTube);
 
 	std::ofstream m_log;
 };
