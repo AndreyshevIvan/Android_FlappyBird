@@ -2,25 +2,43 @@
 
 USING_NS_CC;
 
+const int SKY_Z_INDEX = 0;
+const int CITY_Z_INDEX = 1;
+const int TUBE_Z_INDEX = 3;
+const int GROUND_Z_INDEX = 4;
+
+const int ACTION_MOVE_TAG = 1;
+
+const float CITY_OFFSET_X = 105;
+const float TUBES_INTERNAL_OFFSET_X = 480;
+const float TUBES_START_OFFSET_X = 256;
+
+const float TUBE_GAP = 315;
+const float LOWER_SCREEN_TUBE_THRESHOLD = 0.40f;
+const float UPPER_SCREEN_TUBE_THRESHOLD = 0.90f;
+
+const float TUBES_SPEED = 350;
 
 void GameMap::Init(Layer* layer)
 {
-	Size visibleSize = layer->getContentSize();
-	Vec2 center = Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f);
-	
+	Size winSize = layer->getContentSize();
+	Vec2 center = Vec2(winSize * 0.5f);
+
 	m_background = Sprite::create("background.png");
-	m_background->setContentSize(visibleSize);
+	m_background->setContentSize(winSize);
 	m_background->setPosition(center);
 
 	m_city = Sprite::create("city.png");
 	m_city->setAnchorPoint(Vec2(0.5f, 0));
-	m_city->setPosition(center.x, GROUND_HEIGHT);
+	m_city->setPosition(center.x, CITY_OFFSET_X);
 
 	layer->addChild(m_background, SKY_Z_INDEX);
 	layer->addChild(m_city, CITY_Z_INDEX);
 
+	auto tubesCount = static_cast<int>(winSize.width / TUBES_INTERNAL_OFFSET_X) + 2;
+
 	InitGround(layer);
-	InitTubes(layer);
+	InitTubes(layer, tubesCount);
 	InitPointsBodies(layer);
 
 	Reset();
@@ -30,7 +48,7 @@ void GameMap::InitGround(Layer* layer)
 {
 	m_ground = Sprite::create("ground.png");
 	m_ground->setAnchorPoint(Vec2(0, 0));
-	m_ground->setPosition(GROUND_OFFSET * 0, 0);
+	m_ground->setPosition(Point::ZERO);
 
 	auto groundBody = PhysicsBody::createBox(m_ground->getContentSize());
 	groundBody->setCollisionBitmask(COLLISION_BITMASK);
@@ -41,40 +59,34 @@ void GameMap::InitGround(Layer* layer)
 	layer->addChild(m_ground, GROUND_Z_INDEX);
 }
 
-void GameMap::InitTubes(Layer* layer)
+void GameMap::InitTubes(Layer* layer, int tubesCount)
 {
-	Size visibleSize = layer->getContentSize();
-	Vec2 center = Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f);
+	Size winSize = layer->getContentSize();
+	Vec2 center = Vec2(winSize * 0.5f);
 
-	for (size_t i = 0; i != TUBES_COUNT; i++)
+	for (size_t i = 0; i != tubesCount; i++)
 	{
-		auto topPipe = Sprite::create("tubeTop.png");
-		auto bottomPipe = Sprite::create("tubeBottom.png");
-		topPipe->setAnchorPoint(cocos2d::Vec2(0.5, 0));
-		bottomPipe->setAnchorPoint(cocos2d::Vec2(0.5, 1));
+		auto topTube = Sprite::create("tubeTop.png");
+		topTube->setAnchorPoint(Vec2(0.5, 0));
+		auto topTubeBody = PhysicsBody::createBox(topTube->getContentSize());
+		topTubeBody->setDynamic(false);
+		topTubeBody->setCollisionBitmask(COLLISION_BITMASK);
+		topTubeBody->setContactTestBitmask(true);
+		topTube->setPhysicsBody(topTubeBody);
 
-		const float PIPE_WIDTH = topPipe->getContentSize().width;
+		auto bottomTube = Sprite::create("tubeBottom.png");
+		bottomTube->setAnchorPoint(Vec2(0.5, 1));
+		auto bottomTubeBody = PhysicsBody::createBox(bottomTube->getContentSize());
+		bottomTubeBody->setDynamic(false);
+		bottomTubeBody->setCollisionBitmask(COLLISION_BITMASK);
+		bottomTubeBody->setContactTestBitmask(true);
+		bottomTube->setPhysicsBody(bottomTubeBody);
 
-		auto topPipeBody = PhysicsBody::createBox(topPipe->getContentSize());
-		auto bottomPipeBody = PhysicsBody::createBox(bottomPipe->getContentSize());
+		m_tubes.push_back(topTube);
+		m_tubes.push_back(bottomTube);
 
-		topPipeBody->setDynamic(false);
-		bottomPipeBody->setDynamic(false);
-
-		topPipeBody->setCollisionBitmask(TUBE_COLLISION_BITMASK);
-		bottomPipeBody->setCollisionBitmask(TUBE_COLLISION_BITMASK);
-
-		topPipeBody->setContactTestBitmask(true);
-		bottomPipeBody->setContactTestBitmask(true);
-
-		topPipe->setPhysicsBody(topPipeBody);
-		bottomPipe->setPhysicsBody(bottomPipeBody);
-
-		m_tubes.push_back(topPipe);
-		m_tubes.push_back(bottomPipe);
-
-		layer->addChild(topPipe, TUBE_Z_INDEX);
-		layer->addChild(bottomPipe, TUBE_Z_INDEX);
+		layer->addChild(topTube, TUBE_Z_INDEX);
+		layer->addChild(bottomTube, TUBE_Z_INDEX);
 	}
 }
 
@@ -96,44 +108,60 @@ void GameMap::InitPointsBodies(Layer* layer)
 	}
 }
 
-void GameMap::Update(float elapsedTime)
+void GameMap::StartMotion()
 {
-	UpdateGround(elapsedTime);
-	UpdateTubes(elapsedTime);
+	auto movement = Vec2(-TUBES_SPEED, 0);
+	for (auto tube : m_tubes)
+	{
+		tube->stopAllActions();
+		auto action = RepeatForever::create(MoveBy::create(1, movement));
+		action->setTag(ACTION_MOVE_TAG);
+		tube->runAction(action);
+	}
+	m_ground->stopAllActions();
+	auto action = RepeatForever::create(MoveBy::create(1, movement));
+	action->setTag(ACTION_MOVE_TAG);
+	m_ground->runAction(action);
+}
+
+void GameMap::StopMotion()
+{
+	for (auto tube : m_tubes)
+		tube->stopAllActions();
+	m_ground->stopAllActions();
+}
+
+void GameMap::Update()
+{
+	UpdateGround();
+	UpdateTubes();
 	UpdatePointsBodies();
 }
 
-void GameMap::UpdateGround(float elapsedTime)
+void GameMap::UpdateGround()
 {
-	Vec2 movement = Vec2(-SPEED * elapsedTime, 0);
-
 	const float groundPosition = m_ground->getPosition().x;
+	const float finalPosition = -m_ground->getContentSize().width / 2.0f;
 
-	if (groundPosition <= -m_ground->getContentSize().width / 2.0f)
+	if (groundPosition <= finalPosition)
 	{
 		m_ground->setPosition(Point::ZERO);
 	}
-
-	m_ground->setPosition(m_ground->getPosition() + movement);
 }
 
-void GameMap::UpdateTubes(float elapsedTime)
+void GameMap::UpdateTubes()
 {
 	for (size_t tubeNum = 0; tubeNum != m_tubes.size(); tubeNum += 2)
 	{
 		auto topTube = m_tubes[tubeNum];
 		auto bottomTube = m_tubes[tubeNum + 1];
 
-		auto tubePos = m_tubes[tubeNum]->getPosition();
+		auto tubePos = topTube->getPosition();
 
 		if (tubePos.x + topTube->getContentSize().width / 2.0f <= 0)
 		{
 			ResetTubes(topTube, bottomTube);
 		}
-
-		Vec2 movement = Vec2(SPEED * elapsedTime, 0);
-		topTube->setPosition(topTube->getPosition() - movement);
-		bottomTube->setPosition(bottomTube->getPosition() - movement);
 	}
 }
 
@@ -145,14 +173,14 @@ void GameMap::UpdatePointsBodies()
 	}
 }
 
-cocos2d::PhysicsBody* GameMap::GetGroundBody()
+PhysicsBody* GameMap::GetGroundBody()
 {
 	return m_ground->getPhysicsBody();
 }
 
-std::vector<cocos2d::PhysicsBody*> GameMap::GetTubesBodies()
+std::vector<PhysicsBody*> GameMap::GetTubesBodies()
 {
-	std::vector<cocos2d::PhysicsBody*> bodies;
+	std::vector<PhysicsBody*> bodies;
 
 	for (auto tube : m_tubes)
 	{
@@ -162,23 +190,23 @@ std::vector<cocos2d::PhysicsBody*> GameMap::GetTubesBodies()
 	return bodies;
 }
 
-std::vector<cocos2d::PhysicsBody*> GameMap::GetPointsBodies()
+std::vector<PhysicsBody*> GameMap::GetPointsBodies()
 {
 	return m_pointsBodies;
 }
 
 void GameMap::Reset()
 {
-	const Size visibleSize = Director::getInstance()->getVisibleSize();
+	const Size winSize = Director::getInstance()->getVisibleSize();
 	const float halfTubeWidth = m_tubes.front()->getContentSize().width / 2.0f;
-	const float instantPosX = visibleSize.width + halfTubeWidth + TUBES_START_OFFSET;
+	const float instantPosX = winSize.width + halfTubeWidth + TUBES_START_OFFSET_X;
 
-	for (size_t tubeNum = 0; tubeNum != m_tubes.size(); tubeNum += 2)
+	for (size_t i = 0; i != m_tubes.size(); i += 2)
 	{
-		const float pairOffset = TUBES_BETWEEN_OFFSET * tubeNum / 2.0f;
+		const float pairOffset = TUBES_INTERNAL_OFFSET_X * i / 2.0f;
 
-		auto topTube = m_tubes[tubeNum];
-		auto bottomTube = m_tubes[tubeNum + 1];
+		auto topTube = m_tubes[i];
+		auto bottomTube = m_tubes[i + 1];
 
 		topTube->setPosition(Point(instantPosX + pairOffset, this->GetHeight()));
 		bottomTube->setPosition(Point(instantPosX + pairOffset, topTube->getPositionY() - TUBE_GAP));
@@ -201,9 +229,10 @@ void GameMap::ResetTubes(Sprite* topTube, Sprite* bottomTube)
 {
 	const float oldPosX = topTube->getPosition().x;
 	const float newTopHeight = this->GetHeight();
+	const float resetOffsetX = (m_tubes.size() / 2.0f) * TUBES_INTERNAL_OFFSET_X;
 
-	const Vec2 newTopPos = Vec2(TUBE_RESET_OFFSET + oldPosX, newTopHeight);
-	const Vec2 newbottomPos = Vec2(TUBE_RESET_OFFSET + oldPosX, newTopHeight - TUBE_GAP);
+	const Vec2 newTopPos = Vec2(resetOffsetX + oldPosX, newTopHeight);
+	const Vec2 newbottomPos = Vec2(resetOffsetX + oldPosX, newTopHeight - TUBE_GAP);
 
 	topTube->setPosition(newTopPos);
 	bottomTube->setPosition(newbottomPos);

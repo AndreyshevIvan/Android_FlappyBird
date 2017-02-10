@@ -11,7 +11,7 @@ Scene* GameScene::createScene()
 	scene->getPhysicsWorld()->setGravity(Vect(0, -WORLD_GRAVITY));
 
 	auto layer = GameScene::create();
-	layer->SetPhysicsWorld(scene->getPhysicsWorld());
+	layer->sceneWorld = scene->getPhysicsWorld();
 
 	scene->addChild(layer);
 
@@ -33,7 +33,6 @@ bool GameScene::init()
 	m_bird.Init(this);
 	m_interface.Init(this);
 	m_audio.Init();
-	SetBehavoir(GameBehavior::START);
 
 	auto mapEdge = PhysicsBody::createEdgeBox(visibleSize);
 	auto edgeNode = Node::create();
@@ -47,17 +46,46 @@ bool GameScene::init()
 
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->setSwallowTouches(true);
-	touchListener->onTouchBegan = CC_CALLBACK_2(GameScene::IsScreenTouched, this);
+	touchListener->onTouchBegan = CC_CALLBACK_2(GameScene::TouchEvents, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
 	schedule(schedule_selector(GameScene::GameUpdate));
+	SetBehavoir(GameBehavior::START);
 
 	return true;
 }
 
-void GameScene::SetPhysicsWorld(cocos2d::PhysicsWorld* world)
+void GameScene::GameUpdate(float elapsedTime)
 {
-	sceneWorld = world;
+	m_bird.Update(elapsedTime);
+	m_interface.Update(m_bird.GetPosition());
+	m_background.Update();
+
+	if (m_interface.GetPointsCount() == POINTS_MAX)
+	{
+		SetBehavoir(GameBehavior::GAMEOVER);
+	}
+}
+
+bool GameScene::TouchEvents(Touch* touch, Event* event)
+{
+	switch (m_behavior)
+	{
+	case GameBehavior::START:
+		m_bird.Jump();
+		SetBehavoir(GameBehavior::GAMEPLAY);
+		break;
+	case GameBehavior::GAMEPLAY:
+		m_bird.Jump();
+		break;
+	case GameBehavior::GAMEOVER:
+		SetBehavoir(GameBehavior::START);
+		break;
+	default:
+		break;
+	}
+
+	return true;
 }
 
 void GameScene::SetBehavoir(GameBehavior newBehavior)
@@ -71,12 +99,16 @@ void GameScene::SetBehavoir(GameBehavior newBehavior)
 		m_background.Reset();
 		m_interface.Reset();
 		break;
+
 	case GameBehavior::GAMEPLAY:
 		m_interface.SetGameplayUI();
+		m_background.StartMotion();
 		break;
+
 	case GameBehavior::GAMEOVER:
-		m_interface.SetGameoverUI();
 		m_bird.Death();
+		m_background.StopMotion();
+		m_interface.SetGameoverUI();
 		break;
 	default:
 		break;
@@ -99,7 +131,7 @@ bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 	return false;
 }
 
-bool GameScene::IsCollideWithGround(cocos2d::PhysicsContact& contact)
+bool GameScene::IsCollideWithGround(PhysicsContact& contact)
 {
 	PhysicsBody* bodyA = contact.getShapeA()->getBody();
 	PhysicsBody* bodyB = contact.getShapeB()->getBody();
@@ -116,7 +148,7 @@ bool GameScene::IsCollideWithGround(cocos2d::PhysicsContact& contact)
 	return false;
 }
 
-bool GameScene::IsCollideWithTube(cocos2d::PhysicsContact& contact)
+bool GameScene::IsCollideWithTube(PhysicsContact& contact)
 {
 	PhysicsBody* bodyA = contact.getShapeA()->getBody();
 	PhysicsBody* bodyB = contact.getShapeB()->getBody();
@@ -135,7 +167,7 @@ bool GameScene::IsCollideWithTube(cocos2d::PhysicsContact& contact)
 	return false;
 }
 
-bool GameScene::IsCollideWithPoint(cocos2d::PhysicsContact& contact)
+bool GameScene::IsCollideWithPoint(PhysicsContact& contact)
 {
 	PhysicsBody* bodyA = contact.getShapeA()->getBody();
 	PhysicsBody* bodyB = contact.getShapeB()->getBody();
@@ -152,43 +184,4 @@ bool GameScene::IsCollideWithPoint(cocos2d::PhysicsContact& contact)
 	}
 
 	return false;
-}
-
-bool GameScene::IsScreenTouched(cocos2d::Touch* touch, cocos2d::Event* event)
-{
-	m_audio.Point();
-	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/point.ogg", false, 1.0f, 1.0f, 1.0f);
-	switch (m_behavior)
-	{
-	case GameBehavior::START:
-		SetBehavoir(GameBehavior::GAMEPLAY);
-		m_bird.Jump();
-		break;
-	case GameBehavior::GAMEPLAY:
-		m_bird.Jump();
-		break;
-	case GameBehavior::GAMEOVER:
-		SetBehavoir(GameBehavior::START);
-		break;
-	default:
-		break;
-	}
-
-	return true;
-}
-
-void GameScene::GameUpdate(float elapsedTime)
-{
-	m_bird.Update(elapsedTime);
-	m_interface.Update(m_bird.GetPosition());
-
-	if (m_behavior == GameBehavior::GAMEPLAY)
-	{
-		m_background.Update(elapsedTime);
-	}
-
-	if (m_interface.GetPointsCount() == POINTS_MAX)
-	{
-		SetBehavoir(GameBehavior::GAMEOVER);
-	}
 }
