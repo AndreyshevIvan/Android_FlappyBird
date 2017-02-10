@@ -3,30 +3,45 @@
 
 USING_NS_CC;
 
+const int INTERFACE_Z_INDEX = 100;
+
+const int FONT_POINTS_SIZE = 70;
+const int FONST_SCORE_SIZE = 60;
+const int FONT_OUTLINE_THICKNESS = 5;
+const Color4B FONT_OUTLINE_COLOR = Color4B(92, 53, 70, 255);
+
+const Vec2 SCORE_OFFSET = Vec2(238, 32);
+const float GAMENAME_OFFSET_Y = 360;
+const float GAMEOVER_OFFSET_Y = 360;
+const float POINTS_OFFSET_Y = 512;
+
 void GameInterface::Init(Layer* layer)
 {
 	Size winSize = Director::getInstance()->getVisibleSize();
-	Vec2 center = Vec2(winSize.width / 2.0f, winSize.height / 2.0f);
+	Point center = Point(winSize.width / 2.0f, winSize.height / 2.0f);
 
-	m_points = Label::createWithTTF("0", "fonts/FlappyBird.ttf", POINTS_FONT_SIZE);
+	m_points = Label::createWithTTF("", "fonts/FlappyBird.ttf", FONT_POINTS_SIZE);
 	m_points->enableOutline(FONT_OUTLINE_COLOR, FONT_OUTLINE_THICKNESS);
 	m_points->setAnchorPoint(Vec2(0.5f, 0.5f));
-	m_points->setPosition(Vec2(center.x, winSize.height * POINTS_POS_FACTOR));
+	m_points->setPosition(Point(center.x, center.y + POINTS_OFFSET_Y));
 
 	m_gameOver = Sprite::create("gameOver.png");
-	m_gameOver->setPosition(Vec2(center.x, center.y + GAMEOVER_OFFSET));
+	m_gameOver->setPosition(Point(center.x, center.y + GAMEOVER_OFFSET_Y));
+
 	m_scoreTab = Sprite::create("gameOverMenu.png");
 	m_scoreTab->setPosition(center);
-	m_score = Label::createWithTTF("1337", "fonts/FlappyBird.ttf", SCORE_FONT_SIZE);
+
+	m_score = Label::createWithTTF("", "fonts/FlappyBird.ttf", FONST_SCORE_SIZE);
 	m_score->enableOutline(FONT_OUTLINE_COLOR, FONT_OUTLINE_THICKNESS);
 	m_score->setAnchorPoint(Vec2(1, 0.5f));
 	m_score->setPosition(center + SCORE_OFFSET);
 
 	m_guide = Sprite::create("guide.png");
 	m_guide->setPosition(center);
+
 	m_gameName = Sprite::create("title.png");
-	m_gameName->setPosition(Vec2(center.x, center.y + GAME_NAME_OFFSET));
-	
+	m_gameName->setPosition(Point(center.x, center.y + GAMENAME_OFFSET_Y));
+
 	layer->addChild(m_points, INTERFACE_Z_INDEX);
 	layer->addChild(m_guide, INTERFACE_Z_INDEX);
 	layer->addChild(m_gameName, INTERFACE_Z_INDEX);
@@ -54,8 +69,6 @@ void GameInterface::SetGameoverUI()
 {
 	ResetUI();
 
-	m_score->setString(std::to_string(m_pointsCount));
-
 	m_score->setVisible(true);
 	m_scoreTab->setVisible(true);
 	m_gameOver->setVisible(true);
@@ -78,28 +91,26 @@ void GameInterface::Reset()
 	m_pointsCount = 0;
 }
 
-void GameInterface::Update(float elapsedTime, Vec2 const& birdPosition)
+void GameInterface::Update(Vec2 const& birdPosition)
 {
-	Size winSize = Director::getInstance()->getVisibleSize();
-	Vec2 center = Vec2(winSize.width / 2.0f, winSize.height / 2.0f);
+	m_points->setString(GetPointsStr());
+	m_score->setString(GetPointsStr());
+	UpdateIdleInterface(birdPosition);
+}
 
-	m_pointsCount += 1;
+std::string GameInterface::GetPointsStr()
+{
+	std::string pointsStr;
+	std::stringstream stream;
+	stream << m_pointsCount;
+	pointsStr = stream.str();
 
-	m_points->setString(std::to_string(m_pointsCount));
-
-	UpdateIdleInterface(elapsedTime, birdPosition);
+	return pointsStr;
 }
 
 void GameInterface::AddPoint()
 {
-	if (m_pointsCount - POINTS_MAX == 0)
-	{
-		m_pointsCount = 0;
-	}
-	else
-	{
-		m_pointsCount++;
-	}
+	m_pointsCount = (m_pointsCount - POINTS_MAX == 0) ? 0 : m_pointsCount + 1;
 }
 
 unsigned GameInterface::GetPointsCount()
@@ -107,8 +118,11 @@ unsigned GameInterface::GetPointsCount()
 	return m_pointsCount;
 }
 
-void GameInterface::UpdateIdleInterface(float elapsedTime, Vec2 const& birdPosition)
+void GameInterface::UpdateIdleInterface(Vec2 const& birdPosition)
 {
-	m_guide->setPosition(Vec2(m_guide->getPositionX(), birdPosition.y));
-	m_gameName->setPosition(Vec2(m_gameName->getPosition().x, birdPosition.y + GAME_NAME_OFFSET));
+	auto guidePos = Point(m_guide->getPositionX(), birdPosition.y);
+	auto namePos = Point(m_gameName->getPositionX(), birdPosition.y + GAMENAME_OFFSET_Y);
+
+	m_guide->setPosition(guidePos);
+	m_gameName->setPosition(namePos);
 }

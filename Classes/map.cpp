@@ -5,7 +5,6 @@ USING_NS_CC;
 
 void GameMap::Init(Layer* layer)
 {
-	m_log.open("out.txt");
 	Size visibleSize = layer->getContentSize();
 	Vec2 center = Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f);
 	
@@ -22,8 +21,9 @@ void GameMap::Init(Layer* layer)
 
 	InitGround(layer);
 	InitTubes(layer);
+	InitPointsBodies(layer);
 
-	this->Reset();
+	Reset();
 }
 
 void GameMap::InitGround(Layer* layer)
@@ -33,7 +33,7 @@ void GameMap::InitGround(Layer* layer)
 	m_ground->setPosition(GROUND_OFFSET * 0, 0);
 
 	auto groundBody = PhysicsBody::createBox(m_ground->getContentSize());
-	groundBody->setCollisionBitmask(2);
+	groundBody->setCollisionBitmask(1);
 	groundBody->setContactTestBitmask(true);
 	groundBody->setDynamic(false);
 	m_ground->setPhysicsBody(groundBody);
@@ -78,10 +78,29 @@ void GameMap::InitTubes(Layer* layer)
 	}
 }
 
+void GameMap::InitPointsBodies(Layer* layer)
+{
+	Size winSize = layer->getContentSize();
+	
+	for (size_t i = 0; i <= m_tubes.size(); i += 2)
+	{
+		auto body = PhysicsBody::createBox(Size(1, winSize.height));
+		body->setDynamic(false);
+		body->setCollisionBitmask(5);
+		body->setContactTestBitmask(true);
+		auto node = Node::create();
+		node->addComponent(body);
+		m_pointsBodies.push_back(body);
+
+		layer->addChild(node);
+	}
+}
+
 void GameMap::Update(float elapsedTime)
 {
 	UpdateGround(elapsedTime);
 	UpdateTubes(elapsedTime);
+	UpdatePointsBodies();
 }
 
 void GameMap::UpdateGround(float elapsedTime)
@@ -118,6 +137,14 @@ void GameMap::UpdateTubes(float elapsedTime)
 	}
 }
 
+void GameMap::UpdatePointsBodies()
+{
+	for (size_t i = 0; i != m_tubes.size(); i += 2)
+	{
+		m_pointsBodies[i / 2]->setPositionOffset(m_tubes[i]->getPosition());
+	}
+}
+
 cocos2d::PhysicsBody* GameMap::GetGroundBody()
 {
 	return m_ground->getPhysicsBody();
@@ -133,6 +160,11 @@ std::vector<cocos2d::PhysicsBody*> GameMap::GetTubesBodies()
 	}
 
 	return bodies;
+}
+
+std::vector<cocos2d::PhysicsBody*> GameMap::GetPointsBodies()
+{
+	return m_pointsBodies;
 }
 
 void GameMap::Reset()
@@ -151,6 +183,8 @@ void GameMap::Reset()
 		topTube->setPosition(Point(instantPosX + pairOffset, this->GetHeight()));
 		bottomTube->setPosition(Point(instantPosX + pairOffset, topTube->getPositionY() - TUBE_GAP));
 	}
+
+	UpdatePointsBodies();
 }
 
 float GameMap::GetHeight()

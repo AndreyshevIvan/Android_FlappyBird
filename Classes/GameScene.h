@@ -9,6 +9,7 @@
 #include "bird.h"
 #include "map.h"
 #include "interface.h"
+#include "sound.h"
 
 enum struct GameBehavior
 {
@@ -27,24 +28,24 @@ public:
 	CREATE_FUNC(GameScene);
 
 private:
-	GameBehavior m_behavior;
 	cocos2d::PhysicsWorld* sceneWorld;
+	GameBehavior m_behavior;
 	Bird m_bird;
 	GameMap m_background;
 	GameInterface m_interface;
-	std::vector<cocos2d::PhysicsBody*> m_tubesBodies;
-	std::ofstream m_log;
+	GameSound m_audio;
 
 	void SetPhysicsWorld(cocos2d::PhysicsWorld* world);
 	void SetBehavoir(GameBehavior newBehavior);
 
 	bool IsScreenTouched(cocos2d::Touch* touch, cocos2d::Event* event);
 
-	void GameUpdate(float dt);
+	void GameUpdate(float elapsedTime);
 
-	bool IsBirdFell(cocos2d::PhysicsContact& contact);
+	bool IsBirdCollideAny(cocos2d::PhysicsContact& contact);
 	bool IsCollideWithGround(cocos2d::PhysicsContact& contact);
 	bool IsCollideWithTube(cocos2d::PhysicsContact& contact);
+	bool IsCollideWithPoint(cocos2d::PhysicsContact& contact);
 
 };
 

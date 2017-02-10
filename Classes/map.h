@@ -31,6 +31,7 @@ public:
 
 	cocos2d::PhysicsBody* GetGroundBody();
 	std::vector<cocos2d::PhysicsBody*> GetTubesBodies();
+	std::vector<cocos2d::PhysicsBody*> GetPointsBodies();
 
 	void Reset();
 
@@ -39,12 +40,15 @@ private:
 	cocos2d::Sprite* m_city;
 	cocos2d::Sprite* m_ground;
 	std::vector<cocos2d::Sprite*> m_tubes;
+	std::vector<cocos2d::PhysicsBody*> m_pointsBodies;
 
 	void InitGround(cocos2d::Layer* layer);
 	void InitTubes(cocos2d::Layer* layer);
+	void InitPointsBodies(cocos2d::Layer* layer);
 
 	void UpdateGround(float elapsedTime);
 	void UpdateTubes(float elapsedTime);
+	void UpdatePointsBodies();
 
 	float GetHeight();
 	void ResetTubes(cocos2d::Sprite* topTube, cocos2d::Sprite* bottomTube);

@@ -1,5 +1,4 @@
 #include "GameScene.h"
-#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -8,7 +7,7 @@ const float WORLD_GRAVITY = 2400;
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::createWithPhysics();
-	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+	//scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
 	scene->getPhysicsWorld()->setGravity(Vect(0, -WORLD_GRAVITY));
 
 	auto layer = GameScene::create();
@@ -33,8 +32,7 @@ bool GameScene::init()
 	m_background.Init(this);
 	m_bird.Init(this);
 	m_interface.Init(this);
-
-	//m_tubesBodies = m_background.GetTubesBodies();
+	m_audio.Init();
 	SetBehavoir(GameBehavior::START);
 
 	auto mapEdge = PhysicsBody::createEdgeBox(visibleSize);
@@ -44,7 +42,7 @@ bool GameScene::init()
 	this->addChild(edgeNode);
 
 	auto collideListener = EventListenerPhysicsContact::create();
-	collideListener->onContactBegin = CC_CALLBACK_1(GameScene::IsBirdFell, this);
+	collideListener->onContactBegin = CC_CALLBACK_1(GameScene::IsBirdCollideAny, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(collideListener, this);
 
 	auto touchListener = EventListenerTouchOneByOne::create();
@@ -85,12 +83,17 @@ void GameScene::SetBehavoir(GameBehavior newBehavior)
 	}
 }
 
-bool GameScene::IsBirdFell(PhysicsContact& contact)
+bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 {
 	if (IsCollideWithGround(contact) || IsCollideWithTube(contact))
 	{
 		SetBehavoir(GameBehavior::GAMEOVER);
 		return true;
+	}
+
+	if (IsCollideWithPoint(contact))
+	{
+		m_interface.AddPoint();
 	}
 
 	return false;
@@ -132,8 +135,29 @@ bool GameScene::IsCollideWithTube(cocos2d::PhysicsContact& contact)
 	return false;
 }
 
+bool GameScene::IsCollideWithPoint(cocos2d::PhysicsContact& contact)
+{
+	PhysicsBody* bodyA = contact.getShapeA()->getBody();
+	PhysicsBody* bodyB = contact.getShapeB()->getBody();
+
+	auto birdBody = m_bird.GetBody();
+
+	for (auto pointBody : m_background.GetPointsBodies())
+	{
+		if ((bodyA == birdBody && bodyB == pointBody) ||
+			(bodyA == pointBody && bodyB == birdBody))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool GameScene::IsScreenTouched(cocos2d::Touch* touch, cocos2d::Event* event)
 {
+	m_audio.Point();
+	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/point.ogg", false, 1.0f, 1.0f, 1.0f);
 	switch (m_behavior)
 	{
 	case GameBehavior::START:
@@ -156,7 +180,7 @@ bool GameScene::IsScreenTouched(cocos2d::Touch* touch, cocos2d::Event* event)
 void GameScene::GameUpdate(float elapsedTime)
 {
 	m_bird.Update(elapsedTime);
-	m_interface.Update(elapsedTime, m_bird.GetPos());
+	m_interface.Update(m_bird.GetPos());
 
 	if (m_behavior == GameBehavior::GAMEPLAY)
 	{

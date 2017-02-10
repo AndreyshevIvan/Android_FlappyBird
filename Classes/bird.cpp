@@ -88,7 +88,7 @@ void Bird::FlappingAnimate(float elapsedTime)
 	float frameHeight = m_body->getContentSize().height;
 	int currFrame = m_body->getTextureRect().getMinX() / frameWidth;
 
-	m_log << currFrame;
+	//m_log << currFrame;
 
 	if (m_flappingAnimTime >= 1 / BIRD_ANIMATE_FPS)
 	{
