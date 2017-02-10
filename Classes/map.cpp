@@ -51,9 +51,9 @@ void GameMap::InitGround(Layer* layer)
 	m_ground->setPosition(Point::ZERO);
 
 	auto groundBody = PhysicsBody::createBox(m_ground->getContentSize());
-	groundBody->setCollisionBitmask(COLLISION_BITMASK);
-	groundBody->setContactTestBitmask(true);
 	groundBody->setDynamic(false);
+	groundBody->setCollisionBitmask(MAP_BITMASK);
+	groundBody->setContactTestBitmask(true);
 	m_ground->setPhysicsBody(groundBody);
 
 	layer->addChild(m_ground, GROUND_Z_INDEX);
@@ -70,7 +70,7 @@ void GameMap::InitTubes(Layer* layer, int tubesCount)
 		topTube->setAnchorPoint(Vec2(0.5, 0));
 		auto topTubeBody = PhysicsBody::createBox(topTube->getContentSize());
 		topTubeBody->setDynamic(false);
-		topTubeBody->setCollisionBitmask(COLLISION_BITMASK);
+		topTubeBody->setCollisionBitmask(MAP_BITMASK);
 		topTubeBody->setContactTestBitmask(true);
 		topTube->setPhysicsBody(topTubeBody);
 
@@ -78,7 +78,7 @@ void GameMap::InitTubes(Layer* layer, int tubesCount)
 		bottomTube->setAnchorPoint(Vec2(0.5, 1));
 		auto bottomTubeBody = PhysicsBody::createBox(bottomTube->getContentSize());
 		bottomTubeBody->setDynamic(false);
-		bottomTubeBody->setCollisionBitmask(COLLISION_BITMASK);
+		bottomTubeBody->setCollisionBitmask(MAP_BITMASK);
 		bottomTubeBody->setContactTestBitmask(true);
 		bottomTube->setPhysicsBody(bottomTubeBody);
 
@@ -98,7 +98,7 @@ void GameMap::InitPointsBodies(Layer* layer)
 	{
 		auto body = PhysicsBody::createBox(Size(1, winSize.height));
 		body->setDynamic(false);
-		body->setCollisionBitmask(COLLISION_BITMASK);
+		body->setCollisionBitmask(POINT_BITMASK);
 		body->setContactTestBitmask(true);
 		auto node = Node::create();
 		node->addComponent(body);
@@ -218,8 +218,8 @@ void GameMap::Reset()
 float GameMap::GetHeight()
 {
 	const Size winSize = Director::getInstance()->getVisibleSize();
-	const float minHeight = winSize.height * LOWER_SCREEN_TUBE_THRESHOLD;
 	const float maxHeight = winSize.height * UPPER_SCREEN_TUBE_THRESHOLD;
+	const float minHeight = winSize.height * LOWER_SCREEN_TUBE_THRESHOLD;
 	const float heightRange = maxHeight - minHeight;
 
 	return heightRange * CCRANDOM_0_1() + minHeight;

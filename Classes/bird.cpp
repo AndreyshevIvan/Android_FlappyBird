@@ -25,7 +25,7 @@ void Bird::Init(Layer* layer)
 	m_body->setContentSize(Size(bodyWidth, bodyHeight));
 
 	auto physBody = PhysicsBody::createCircle(bodyHeight / 2.0f);
-	physBody->setCollisionBitmask(COLLISION_BITMASK);
+	physBody->setCollisionBitmask(BIRD_BITMASK);
 	physBody->setContactTestBitmask(true);
 	physBody->setRotationEnable(false);
 	m_body->setPhysicsBody(physBody);
