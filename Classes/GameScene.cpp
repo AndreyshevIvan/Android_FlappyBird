@@ -180,7 +180,7 @@ bool GameScene::IsScreenTouched(cocos2d::Touch* touch, cocos2d::Event* event)
 void GameScene::GameUpdate(float elapsedTime)
 {
 	m_bird.Update(elapsedTime);
-	m_interface.Update(m_bird.GetPos());
+	m_interface.Update(m_bird.GetPosition());
 
 	if (m_behavior == GameBehavior::GAMEPLAY)
 	{

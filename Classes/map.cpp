@@ -33,7 +33,7 @@ void GameMap::InitGround(Layer* layer)
 	m_ground->setPosition(GROUND_OFFSET * 0, 0);
 
 	auto groundBody = PhysicsBody::createBox(m_ground->getContentSize());
-	groundBody->setCollisionBitmask(1);
+	groundBody->setCollisionBitmask(COLLISION_BITMASK);
 	groundBody->setContactTestBitmask(true);
 	groundBody->setDynamic(false);
 	m_ground->setPhysicsBody(groundBody);
@@ -86,7 +86,7 @@ void GameMap::InitPointsBodies(Layer* layer)
 	{
 		auto body = PhysicsBody::createBox(Size(1, winSize.height));
 		body->setDynamic(false);
-		body->setCollisionBitmask(5);
+		body->setCollisionBitmask(COLLISION_BITMASK);
 		body->setContactTestBitmask(true);
 		auto node = Node::create();
 		node->addComponent(body);

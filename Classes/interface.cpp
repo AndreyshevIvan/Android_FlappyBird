@@ -120,9 +120,9 @@ unsigned GameInterface::GetPointsCount()
 
 void GameInterface::UpdateIdleInterface(Vec2 const& birdPosition)
 {
-	auto guidePos = Point(m_guide->getPositionX(), birdPosition.y);
-	auto namePos = Point(m_gameName->getPositionX(), birdPosition.y + GAMENAME_OFFSET_Y);
+	auto guidePosX = m_guide->getPositionX();
+	auto namePosX = m_gameName->getPositionX();
 
-	m_guide->setPosition(guidePos);
-	m_gameName->setPosition(namePos);
+	m_guide->setPosition(Point(guidePosX, birdPosition.y));
+	m_gameName->setPosition(Point(namePosX, birdPosition.y + GAMENAME_OFFSET_Y));
 }

@@ -19,7 +19,6 @@ public:
 	void SetGameplayUI();
 	void SetGameoverUI();
 
-	void ResetUI();
 	void Reset();
 
 private:
@@ -35,6 +34,8 @@ private:
 
 	void UpdateIdleInterface(cocos2d::Vec2 const& birdPosition);
 	std::string GetPointsStr();
+
+	void ResetUI();
 
 };
 
