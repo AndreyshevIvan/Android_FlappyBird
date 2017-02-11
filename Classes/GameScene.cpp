@@ -23,6 +23,8 @@ bool GameScene::init()
 		return false;
 	}
 
+	this->setKeypadEnabled(true);
+
 	auto winSize = Director::getInstance()->getVisibleSize();
 	Vec2 center = Vec2(winSize * 0.5f);
 
@@ -132,4 +134,9 @@ bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 	}
 
 	return false;
+}
+
+void GameScene::OnKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
+{
+	Director::getInstance()->end();
 }

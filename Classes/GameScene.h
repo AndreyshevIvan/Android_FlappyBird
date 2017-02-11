@@ -34,6 +34,7 @@ private:
 	void SetBehavoir(GameBehavior newBehavior);
 
 	bool HandleTouch(cocos2d::Touch* touch, cocos2d::Event* event);
+	void OnKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event);
 	void Update(float elapsedTime);
 
 };
