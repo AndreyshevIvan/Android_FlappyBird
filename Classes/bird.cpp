@@ -68,6 +68,7 @@ void Bird::Idle(float elapsedTime)
 
 void Bird::Jump()
 {
+	m_audio.Wing();
 	m_status = BirdStatus::FLAPPING;
 	m_body->getPhysicsBody()->setGravityEnable(true);
 	m_body->getPhysicsBody()->setVelocity(Vec2(0, BIRD_JUMP_VELOCITY));
@@ -76,6 +77,8 @@ void Bird::Jump()
 void Bird::Death()
 {
 	m_status = BirdStatus::DEAD;
+	m_audio.Hit();
+	m_audio.Die();
 
 	float frameWidth = m_body->getContentSize().width;
 	float frameHeight = m_body->getContentSize().height;

@@ -28,7 +28,6 @@ private:
 	Bird m_bird;
 	GameMap m_background;
 	GameInterface m_interface;
-	GameSound m_audio;
 
 	bool IsBirdCollideAny(cocos2d::PhysicsContact& contact);
 

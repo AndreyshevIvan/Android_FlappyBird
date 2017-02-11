@@ -29,7 +29,6 @@ bool GameScene::init()
 	m_background.Init(this);
 	m_bird.Init(this);
 	m_interface.Init(this);
-	m_audio.Init();
 
 	auto mapEdge = PhysicsBody::createEdgeBox(winSize);
 	auto edgeNode = Node::create();

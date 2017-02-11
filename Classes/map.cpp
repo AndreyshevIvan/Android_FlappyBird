@@ -10,10 +10,10 @@ const int GROUND_Z_INDEX = 4;
 const int ACTION_MOVE_TAG = 1;
 
 const float CITY_OFFSET_X = 105;
-const float TUBES_INTERNAL_OFFSET_X = 480;
+const float TUBES_INTERNAL_OFFSET_X = 450;
 const float TUBES_START_OFFSET_X = 256;
 
-const float TUBE_GAP = 315;
+const float TUBE_GAP = 290;
 const float LOWER_SCREEN_TUBE_THRESHOLD = 0.40f;
 const float UPPER_SCREEN_TUBE_THRESHOLD = 0.90f;
 

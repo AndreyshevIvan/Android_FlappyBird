@@ -8,8 +8,9 @@
 class GameSound
 {
 public:
-	void Init();
+	GameSound();
 
+	void Wing();
 	void Point();
 	void Hit();
 	void Die();
@@ -17,7 +18,7 @@ public:
 
 private:
 
-	std::ofstream m_log;
+	CocosDenshion::SimpleAudioEngine* m_audio;
 };
 
 #endif // __SOUND_H__

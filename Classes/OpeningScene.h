@@ -4,20 +4,18 @@
 #include "cocos2d.h"
 #include "constants.h"
 
-#include "bird.h"
-#include "map.h"
+#include "GameScene.h"
 
-class GameOverScene : public cocos2d::Layer
+class OpeningScene : public cocos2d::Layer
 {
 public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
-	void exitPause(cocos2d::Ref* pSender);
-	CREATE_FUNC(GameOverScene);
+	CREATE_FUNC(OpeningScene);
 
 private:
-	cocos2d::Director *m_director;
-	cocos2d::Size m_visibleSize;
+	void GoToGameScene(float elapsedTime);
+
 };
 
 #endif // __PAUSE_SCENE_H__

@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "constants.h"
+#include "sound.h"
 #include <cmath>
 
 enum struct BirdStatus
@@ -26,6 +27,7 @@ public:
 	void Death();
 
 private:
+	GameSound m_audio;
 	cocos2d::Sprite* m_body;
 	cocos2d::Texture2D* m_aliveTexture;
 	cocos2d::Texture2D* m_deadTexture;

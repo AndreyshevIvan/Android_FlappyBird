@@ -69,6 +69,7 @@ void GameInterface::SetGameoverUI()
 {
 	ResetUI();
 
+	m_audio.Swooshing();
 	m_score->setVisible(true);
 	m_scoreTab->setVisible(true);
 	m_gameOver->setVisible(true);
@@ -110,6 +111,7 @@ std::string GameInterface::GetPointsStr()
 
 void GameInterface::AddPoint()
 {
+	m_audio.Point();
 	m_pointsCount = (m_pointsCount - POINTS_MAX == 0) ? 0 : m_pointsCount + 1;
 }
 

@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "constants.h"
+#include "sound.h"
 #include <sstream>
 
 class GameInterface
@@ -24,6 +25,7 @@ public:
 private:
 	unsigned m_pointsCount;
 	float m_guideTimer;
+	GameSound m_audio;
 
 	cocos2d::Label* m_points;
 	cocos2d::Label* m_score;

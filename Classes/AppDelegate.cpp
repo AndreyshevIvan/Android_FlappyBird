@@ -1,9 +1,11 @@
 #include "AppDelegate.h"
 #include "GameScene.h"
+#include "OpeningScene.h"
 
 USING_NS_CC;
 
-static cocos2d::Size designResolutionSize = cocos2d::Size(720, 1280);
+static cocos2d::Size DESIGN_RESOLUTION_SIZE = cocos2d::Size(720, 1280);
+static cocos2d::Size WINDOW_RESOLUTION_SIZE = cocos2d::Size(450, 800);
 //static cocos2d::Size smallResolutionSize = cocos2d::Size(480, 320);
 //static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
 //static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
@@ -39,7 +41,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	auto glview = director->getOpenGLView();
 	if (!glview) {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-		glview = GLViewImpl::createWithRect("FlappyBird_Try2", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
+		glview = GLViewImpl::createWithRect(
+			"FlappyBird_Try2",
+			cocos2d::Rect(0, 0, WINDOW_RESOLUTION_SIZE.width, WINDOW_RESOLUTION_SIZE.height));
 #else
 		glview = GLViewImpl::create("FlappyBird_Try2");
 #endif
@@ -53,7 +57,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	director->setAnimationInterval(1.0f / 60);
 
 	// Set the design resolution
-	glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::NO_BORDER);
+	glview->setDesignResolutionSize(DESIGN_RESOLUTION_SIZE.width, DESIGN_RESOLUTION_SIZE.height, ResolutionPolicy::NO_BORDER);
 	auto frameSize = glview->getFrameSize();
 	/*
 	// if the frame's height is larger than the height of medium size.
@@ -76,7 +80,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	register_all_packages();
 
 	// create a scene. it's an autorelease object
-	auto scene = GameScene::createScene();
+	auto scene = OpeningScene::createScene();
 
 	// run
 	director->runWithScene(scene);
