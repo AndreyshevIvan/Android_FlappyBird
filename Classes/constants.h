@@ -1,10 +1,8 @@
 #ifndef __CONSTANTS_H__
 #define __CONSTANTS_H__
 
-#include <fstream>
-
-#define DISPLAY_TIME_SPLASH_SCENE 2
-#define TRANSITION_TIME 0.5
+const int FONT_OUTLINE_THICKNESS = 5;
+const cocos2d::Color4B FONT_OUTLINE_COLOR = cocos2d::Color4B(92, 53, 70, 255);
 
 const int MAP_BITMASK = 1;
 const int POINT_BITMASK = 2;

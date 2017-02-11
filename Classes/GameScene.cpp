@@ -23,7 +23,7 @@ bool GameScene::init()
 		return false;
 	}
 
-	this->setKeypadEnabled(true);
+	this->isKeypadEnabled();
 
 	auto winSize = Director::getInstance()->getVisibleSize();
 	Vec2 center = Vec2(winSize * 0.5f);
@@ -47,6 +47,10 @@ bool GameScene::init()
 	touchListener->onTouchBegan = CC_CALLBACK_2(GameScene::HandleTouch, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
+	auto pKeybackListener = EventListenerKeyboard::create();
+	pKeybackListener->onKeyReleased = CC_CALLBACK_2(GameScene::onKeyReleased, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(pKeybackListener, this);
+
 	schedule(schedule_selector(GameScene::Update));
 	SetBehavoir(GameBehavior::START);
 
@@ -55,11 +59,16 @@ bool GameScene::init()
 
 void GameScene::Update(float elapsedTime)
 {
+	float unreachableHeight = Director::getInstance()->getVisibleSize().height;
+	float birdHeight = m_bird.GetPosition().y;
+
 	m_bird.Update(elapsedTime);
 	m_interface.Update(m_bird.GetPosition());
 	m_background.Update();
 
-	if (m_interface.GetPointsCount() == POINTS_MAX)
+	if (m_interface.GetPointsCount() == POINTS_MAX ||
+		birdHeight > unreachableHeight ||
+		birdHeight < 0)
 	{
 		SetBehavoir(GameBehavior::GAMEOVER);
 	}
@@ -79,7 +88,10 @@ bool GameScene::HandleTouch(Touch* touch, Event* event)
 		break;
 
 	case GameBehavior::GAMEOVER:
-		SetBehavoir(GameBehavior::START);
+		if (m_interface.IsGameoverInit())
+		{
+			SetBehavoir(GameBehavior::START);
+		}
 		break;
 	default:
 		break;
@@ -106,9 +118,9 @@ void GameScene::SetBehavoir(GameBehavior newBehavior)
 		break;
 
 	case GameBehavior::GAMEOVER:
+		m_interface.SetGameoverUI();
 		m_bird.Death();
 		m_background.StopMotion();
-		m_interface.SetGameoverUI();
 		break;
 	default:
 		break;
@@ -136,7 +148,10 @@ bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 	return false;
 }
 
-void GameScene::OnKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
+void GameScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event *pEvent)
 {
-	Director::getInstance()->end();
+	if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
+	{
+		Director::getInstance()->end();
+	}
 }

@@ -5,15 +5,18 @@ USING_NS_CC;
 
 const int INTERFACE_Z_INDEX = 100;
 
-const int FONT_POINTS_SIZE = 70;
+const int FONT_POINTS_SIZE = 90;
 const int FONST_SCORE_SIZE = 60;
-const int FONT_OUTLINE_THICKNESS = 5;
-const Color4B FONT_OUTLINE_COLOR = Color4B(92, 53, 70, 255);
 
+const Vec2 GAMEOVER_UI_OFFSET = Vec2(0, 700);
 const Vec2 SCORE_OFFSET = Vec2(238, 32);
 const float GAMENAME_OFFSET_Y = 360;
 const float GAMEOVER_OFFSET_Y = 360;
 const float POINTS_OFFSET_Y = 512;
+
+const int ACTION_MOVE_GAMEOVER_UI_TAG = 1;
+
+const float GAMEOVER_INIT_DURATION = 0.8f;
 
 void GameInterface::Init(Layer* layer)
 {
@@ -69,20 +72,40 @@ void GameInterface::SetGameoverUI()
 {
 	ResetUI();
 
+	Point center = Director::getInstance()->getVisibleSize() * 0.5f;
+
 	m_audio.Swooshing();
 	m_score->setVisible(true);
 	m_scoreTab->setVisible(true);
 	m_gameOver->setVisible(true);
+
+	auto moveElemets = MoveBy::create(GAMEOVER_INIT_DURATION, -GAMEOVER_UI_OFFSET);
+	moveElemets->setTag(ACTION_MOVE_GAMEOVER_UI_TAG);
+	auto easeCircle = EaseCircleActionOut::create(moveElemets->clone());
+
+	m_score->runAction(easeCircle->clone());
+	m_scoreTab->runAction(easeCircle->clone());
+	m_gameOver->runAction(easeCircle->clone());
 }
 
 void GameInterface::ResetUI()
 {
+	Point center = Director::getInstance()->getVisibleSize() * 0.5f;
+
 	m_points->setVisible(false);
 	m_score->setVisible(false);
 	m_scoreTab->setVisible(false);
 	m_gameOver->setVisible(false);
 	m_gameName->setVisible(false);
 	m_guide->setVisible(false);
+
+	m_score->stopAllActions();
+	m_scoreTab->stopAllActions();
+	m_gameOver->stopAllActions();
+
+	m_score->setPositionY(center.y + SCORE_OFFSET.y + GAMEOVER_UI_OFFSET.y);
+	m_scoreTab->setPositionY(center.y + GAMEOVER_UI_OFFSET.y);
+	m_gameOver->setPositionY(center.y + GAMEOVER_OFFSET_Y + GAMEOVER_UI_OFFSET.y);
 }
 
 void GameInterface::Reset()
@@ -97,6 +120,16 @@ void GameInterface::Update(Vec2 const& birdPosition)
 	m_points->setString(GetPointsStr());
 	m_score->setString(GetPointsStr());
 	UpdateIdleInterface(birdPosition);
+}
+
+bool GameInterface::IsGameoverInit()
+{
+	if (m_score->getNumberOfRunningActions() == 0)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 std::string GameInterface::GetPointsStr()

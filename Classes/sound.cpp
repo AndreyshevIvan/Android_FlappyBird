@@ -37,5 +37,5 @@ void GameSound::Die()
 
 void GameSound::Swooshing()
 {
-	//m_audio->playEffect("sounds/swooshing.wav", false);
+	m_audio->playEffect("sounds/swooshing.wav", false);
 }

@@ -20,6 +20,8 @@ public:
 	void SetGameplayUI();
 	void SetGameoverUI();
 
+	bool IsGameoverInit();
+
 	void Reset();
 
 private:
