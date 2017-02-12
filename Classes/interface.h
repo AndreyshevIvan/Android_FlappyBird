@@ -31,16 +31,24 @@ private:
 
 	cocos2d::Label* m_points;
 	cocos2d::Label* m_score;
+	cocos2d::Label* m_bestScore;
 	cocos2d::Sprite* m_scoreTab;
+	cocos2d::Sprite* m_medal;
+	cocos2d::Sprite* m_newHighScoreTab;
 	cocos2d::Sprite* m_gameOver;
 	cocos2d::Sprite* m_gameName;
 	cocos2d::Sprite* m_guide;
 
 	void UpdateIdleInterface(cocos2d::Vec2 const& birdPosition);
-	std::string GetPointsStr();
+	std::string GetHighScoreStr();
+	void SetMedal();
+	void SetNewHightScore();
+	bool IsScoreNew();
 
 	void ResetUI();
 
 };
+
+std::string PointsToStr(unsigned points);
 
 #endif // __INTERFACE_H__
