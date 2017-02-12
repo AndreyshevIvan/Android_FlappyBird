@@ -32,7 +32,7 @@ bool OpeningScene::init()
 
 	Director::getInstance()->setClearColor(BACKGROUND_COLOR);
 
-	Sprite* bird = Sprite::create("bird.png");
+	Sprite* bird = Sprite::create("textures/bird.png");
 	auto birdSize = Size(bird->getContentSize().width / 4, bird->getContentSize().height);
 	bird->setContentSize(birdSize);
 	bird->setTextureRect(Rect(0, 0, birdSize.width, birdSize.height));

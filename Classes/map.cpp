@@ -13,7 +13,7 @@ const float CITY_OFFSET_X = 105;
 const float TUBES_INTERNAL_OFFSET_X = 450;
 const float TUBES_START_OFFSET_X = 256;
 
-const float TUBE_GAP = 290;
+const float TUBE_GAP = 300;
 const float LOWER_SCREEN_TUBE_THRESHOLD = 0.40f;
 const float UPPER_SCREEN_TUBE_THRESHOLD = 0.90f;
 
@@ -24,11 +24,11 @@ void GameMap::Init(Layer* layer)
 	Size winSize = layer->getContentSize();
 	Vec2 center = Vec2(winSize * 0.5f);
 
-	m_background = Sprite::create("background.png");
+	m_background = Sprite::create("textures/background.png");
 	m_background->setContentSize(winSize);
 	m_background->setPosition(center);
 
-	m_city = Sprite::create("city.png");
+	m_city = Sprite::create("textures/city.png");
 	m_city->setAnchorPoint(Vec2(0.5f, 0));
 	m_city->setPosition(center.x, CITY_OFFSET_X);
 
@@ -46,7 +46,7 @@ void GameMap::Init(Layer* layer)
 
 void GameMap::InitGround(Layer* layer)
 {
-	m_ground = Sprite::create("ground.png");
+	m_ground = Sprite::create("textures/ground.png");
 	m_ground->setAnchorPoint(Vec2(0, 0));
 	m_ground->setPosition(Point::ZERO);
 
@@ -66,7 +66,7 @@ void GameMap::InitTubes(Layer* layer, int tubesCount)
 
 	for (size_t i = 0; i != tubesCount; i++)
 	{
-		auto topTube = Sprite::create("tubeTop.png");
+		auto topTube = Sprite::create("textures/tubeTop.png");
 		topTube->setAnchorPoint(Vec2(0.5, 0));
 		auto topTubeBody = PhysicsBody::createBox(topTube->getContentSize());
 		topTubeBody->setDynamic(false);
@@ -74,7 +74,7 @@ void GameMap::InitTubes(Layer* layer, int tubesCount)
 		topTubeBody->setContactTestBitmask(true);
 		topTube->setPhysicsBody(topTubeBody);
 
-		auto bottomTube = Sprite::create("tubeBottom.png");
+		auto bottomTube = Sprite::create("textures/tubeBottom.png");
 		bottomTube->setAnchorPoint(Vec2(0.5, 1));
 		auto bottomTubeBody = PhysicsBody::createBox(bottomTube->getContentSize());
 		bottomTubeBody->setDynamic(false);

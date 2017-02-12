@@ -11,10 +11,10 @@ const int BIRD_BITMASK = 3;
 const float FLAPPING_SPEED = 10;
 const float OSCILLATION_AMPLITUDE = 8;
 
-const unsigned POINTS_BRONZE = 10;
-const unsigned POINTS_SILVER = 20;
-const unsigned POINTS_GOLD = 50;
-const unsigned POINTS_PLATINUM = 100;
+const unsigned POINTS_BRONZE = 5;
+const unsigned POINTS_SILVER = 15;
+const unsigned POINTS_GOLD = 30;
+const unsigned POINTS_PLATINUM = 60;
 const unsigned POINTS_MAX = 4815;
 
 #endif // __CONSTANTS_H__

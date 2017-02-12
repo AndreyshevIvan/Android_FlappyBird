@@ -34,10 +34,10 @@ void GameInterface::Init(Layer* layer)
 	m_points->setAnchorPoint(Vec2(0.5f, 0.5f));
 	m_points->setPosition(Point(center.x, center.y + POINTS_OFFSET_Y));
 
-	m_gameOver = Sprite::create("gameOver.png");
+	m_gameOver = Sprite::create("textures/gameOver.png");
 	m_gameOver->setPosition(Point(center.x, center.y + GAMEOVER_OFFSET_Y));
 
-	m_scoreTab = Sprite::create("gameOverMenu.png");
+	m_scoreTab = Sprite::create("textures/gameOverMenu.png");
 	m_scoreTab->setPosition(center);
 
 	m_score = Label::createWithTTF("", "fonts/FlappyBird.ttf", FONST_SCORE_SIZE);
@@ -50,20 +50,20 @@ void GameInterface::Init(Layer* layer)
 	m_bestScore->setAnchorPoint(Vec2(1, 0.5f));
 	m_bestScore->setPosition(center + SCORE_BEST_OFFSET);
 
-	m_guide = Sprite::create("guide.png");
+	m_guide = Sprite::create("textures/guide.png");
 	m_guide->setPosition(center);
 
-	m_gameName = Sprite::create("title.png");
+	m_gameName = Sprite::create("textures/title.png");
 	m_gameName->setPosition(Point(center.x, center.y + GAMENAME_OFFSET_Y));
 
-	m_medal = Sprite::create("medals.png");
+	m_medal = Sprite::create("textures/medals.png");
 	const float medalWidth = m_medal->getContentSize().width / MEDALS_COUNT;
 	const float medalHeight = m_medal->getContentSize().height;
 	m_medal->setContentSize(Size(medalWidth, medalHeight));
 	m_medal->setPosition(center + MEDAL_OFFSET);
 	m_medal->setTextureRect(Rect(0, 0, medalWidth, medalHeight));
 
-	m_newHighScoreTab = Sprite::create("newScore.png");
+	m_newHighScoreTab = Sprite::create("textures/newScore.png");
 	m_newHighScoreTab->setPosition(center + NEWTAB_OFFSET);
 
 	UserDefault* memory = UserDefault::getInstance();
@@ -188,7 +188,7 @@ bool GameInterface::IsScoreNew()
 	UserDefault* memory = UserDefault::getInstance();
 	auto highScore = memory->getIntegerForKey(HIGHTSCORE_KEY, 0);
 
-	return (m_pointsCount > highScore);
+	return (m_pointsCount > static_cast<unsigned>(highScore));
 }
 
 void GameInterface::SetNewHightScore()

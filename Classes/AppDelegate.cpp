@@ -42,10 +42,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	if (!glview) {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
 		glview = GLViewImpl::createWithRect(
-			"FlappyBird_Try2",
+			"FlappyBird by Ivan A.",
 			cocos2d::Rect(0, 0, WINDOW_RESOLUTION_SIZE.width, WINDOW_RESOLUTION_SIZE.height));
 #else
-		glview = GLViewImpl::create("FlappyBird_Try2");
+		glview = GLViewImpl::create("FlappyBird by Ivan A.");
 #endif
 		director->setOpenGLView(glview);
 	}

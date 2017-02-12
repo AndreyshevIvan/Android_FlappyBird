@@ -19,12 +19,13 @@ void Bird::Init(Layer* layer)
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Point center = Point(visibleSize.width / 2.0f, visibleSize.height / 2.0f);
 
-	m_body = Sprite::create("bird.png");
+	m_body = Sprite::create("textures/bird.png");
 	const float bodyWidth = m_body->getContentSize().width / static_cast<float>(BIRD_FRAMES);
 	const float bodyHeight = m_body->getContentSize().height;
 	m_body->setContentSize(Size(bodyWidth, bodyHeight));
 
-	auto physBody = PhysicsBody::createCircle(bodyHeight / 2.0f);
+	auto radius = (bodyWidth < bodyHeight) ? bodyWidth / 2.0f : bodyHeight / 2.0f;
+	auto physBody = PhysicsBody::createCircle(radius);
 	physBody->setCollisionBitmask(BIRD_BITMASK);
 	physBody->setContactTestBitmask(true);
 	physBody->setRotationEnable(false);
