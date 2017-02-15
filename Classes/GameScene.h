@@ -25,8 +25,8 @@ public:
 
 private:
 	GameBehavior m_behavior;
-	Bird m_bird;
-	GameMap m_background;
+	Bird* m_bird;
+	GameMap* m_map;
 	GameInterface m_interface;
 
 	bool IsBirdCollideAny(cocos2d::PhysicsContact& contact);

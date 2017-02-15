@@ -1,0 +1,306 @@
+Building mode: debug
+Using Eclipse project : D:\Programs\Android_Developing\FlappyBird_Try2\proj.android
+running: '"C:\Users\Ivan\AppData\Local\Android\Sdk\tools\android" update project -t android-25 -p D:\Programs\Android_Developing\FlappyBird_Try2\proj.android'
+
+Updated project.properties
+Updated local.properties
+Updated file D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\proguard-project.txt
+It seems that there are sub-projects. If you want to update them
+please use the --subprojects parameter.
+running: '"C:\Users\Ivan\AppData\Local\Android\Sdk\tools\android" update lib-project -p D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java -t android-25'
+
+Updated project.properties
+Updated local.properties
+Updated file D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\proguard-project.txt
+Building native...
+NDK build mode: debug
+running: '"D:\Programs\Android_Developing\Downloads\android-ndk-r11c-windows-x86_64\android-ndk-r11c\ndk-build" -C D:\Programs\Android_Developing\FlappyBird_Try2\proj.android -j4 NDK_MODULE_PATH=D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d;D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos;D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\external NDK_TOOLCHAIN_VERSION=4.9 NDK_DEBUG=1'
+
+Android NDK: WARNING: APP_PLATFORM android-24 is larger than android:minSdkVersion 14 in ./AndroidManifest.xml    
+make: Entering directory `D:/Programs/Android_Developing/FlappyBird_Try2/proj.android'
+[armeabi] StaticLibrary  : libcocos2d.a
+[armeabi] StaticLibrary  : libcocostudio.a
+[armeabi] StaticLibrary  : libcocos3d.a
+[armeabi] StaticLibrary  : libcocosbuilder.a
+[armeabi] StaticLibrary  : libspine.a
+[armeabi] StaticLibrary  : libui.a
+[armeabi] StaticLibrary  : libcocosdenshion.a
+[armeabi] StaticLibrary  : flatbuffers.a
+[armeabi] StaticLibrary  : libextension.a
+[armeabi] StaticLibrary  : libaudioengine.a
+[armeabi] StaticLibrary  : libbox2d.a
+[armeabi] StaticLibrary  : libnetwork.a
+[armeabi] StaticLibrary  : libcocos2dxinternal.a
+[armeabi] StaticLibrary  : librecast.a
+[armeabi] StaticLibrary  : libbullet.a
+[armeabi] StaticLibrary  : libcocos2dandroid.a
+[armeabi] StaticLibrary  : libcpufeatures.a
+[armeabi] Gdbserver      : [arm-linux-androideabi-4.9] libs/armeabi/gdbserver
+[armeabi] Gdbsetup       : libs/armeabi/gdb.setup
+[armeabi] SharedLibrary  : libMyGame.so
+[armeabi] Install        : libMyGame.so => libs/armeabi/libMyGame.so
+make: Leaving directory `D:/Programs/Android_Developing/FlappyBird_Try2/proj.android'
+Building apk...
+running: 'call  "D:\Programs\Android_Developing\Downloads\apache-ant-1.10.0-bin\apache-ant-1.10.0\bin\ant.bat" clean debug -f D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\build.xml -Dsdk.dir="C:\Users\Ivan\AppData\Local\Android\Sdk"'
+
+Buildfile: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\build.xml
+
+-check-env:
+ [checkenv] Android SDK Tools Revision 25.2.5
+ [checkenv] Installed at C:\Users\Ivan\AppData\Local\Android\Sdk
+
+-setup:
+     [echo] Project Name: FlappyBird_Try2
+  [gettype] Project Type: Application
+
+-pre-clean:
+
+clean:
+   [delete] Deleting directory D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin
+   [delete] Deleting directory D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\gen
+[getlibpath] Library dependencies:
+[getlibpath] 
+[getlibpath] ------------------
+[getlibpath] Ordered libraries:
+
+nodeps:
+
+-check-env:
+ [checkenv] Android SDK Tools Revision 25.2.5
+ [checkenv] Installed at C:\Users\Ivan\AppData\Local\Android\Sdk
+
+-setup:
+     [echo] Project Name: cocos2dxandroid
+  [gettype] Project Type: Android Library
+
+-pre-clean:
+
+clean:
+   [delete] Deleting directory D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin
+   [delete] Deleting directory D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\gen
+
+-set-mode-check:
+
+-set-debug-files:
+
+-check-env:
+ [checkenv] Android SDK Tools Revision 25.2.5
+ [checkenv] Installed at C:\Users\Ivan\AppData\Local\Android\Sdk
+
+-setup:
+     [echo] Project Name: FlappyBird_Try2
+  [gettype] Project Type: Application
+
+-set-debug-mode:
+
+-debug-obfuscation-check:
+
+-pre-build:
+
+-build-setup:
+[getbuildtools] Using latest Build Tools: 25.0.2
+     [echo] Resolving Build Target for FlappyBird_Try2...
+[gettarget] Project Target:   Android 7.1.1
+[gettarget] API level:        25
+     [echo] ----------
+     [echo] Creating output directories if needed...
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\res
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\rsObj
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\rsLibs
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\gen
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\classes
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\dexedLibs
+     [echo] ----------
+     [echo] Resolving Dependencies for FlappyBird_Try2...
+[dependency] Ordered libraries:
+[dependency] D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java
+[dependency] 
+[dependency] ------------------
+     [echo] ----------
+     [echo] Building Libraries with 'debug'...
+
+nodeps:
+
+-set-mode-check:
+
+-set-debug-files:
+
+-check-env:
+ [checkenv] Android SDK Tools Revision 25.2.5
+ [checkenv] Installed at C:\Users\Ivan\AppData\Local\Android\Sdk
+
+-setup:
+     [echo] Project Name: cocos2dxandroid
+  [gettype] Project Type: Android Library
+
+-set-debug-mode:
+
+-debug-obfuscation-check:
+
+-pre-build:
+
+-build-setup:
+[getbuildtools] Using latest Build Tools: 25.0.2
+     [echo] Resolving Build Target for cocos2dxandroid...
+[gettarget] Project Target:   Android 7.1.1
+[gettarget] API level:        25
+     [echo] ----------
+     [echo] Creating output directories if needed...
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\res
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\rsObj
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\rsLibs
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\gen
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\classes
+    [mkdir] Created dir: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\dexedLibs
+     [echo] ----------
+     [echo] Resolving Dependencies for cocos2dxandroid...
+[dependency] Library dependencies:
+[dependency] No Libraries
+[dependency] 
+[dependency] ------------------
+
+-code-gen:
+[mergemanifest] Merging AndroidManifest files into one.
+[mergemanifest] Manifest merger disabled. Using project manifest only.
+     [echo] Handling aidl files...
+     [aidl] Found 1 AIDL files.
+     [aidl] Compiling 1 AIDL files.
+     [echo] ----------
+     [echo] Handling RenderScript files...
+     [echo] ----------
+     [echo] Handling Resources...
+     [aapt] Generating resource IDs...
+     [echo] ----------
+     [echo] Handling BuildConfig class...
+[buildconfig] Generating BuildConfig class.
+
+-pre-compile:
+
+-compile:
+    [javac] Compiling 29 source files to D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\classes
+    [javac] warning: [options] source value 1.5 is obsolete and will be removed in a future release
+    [javac] warning: [options] target value 1.5 is obsolete and will be removed in a future release
+    [javac] warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+    [javac] Note: Some input files use or override a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 3 warnings
+     [echo] Creating library output jar file...
+      [jar] Building jar: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\classes.jar
+
+-post-compile:
+
+-obfuscate:
+
+-dex:
+     [echo] Library project: do not convert bytecode...
+
+-crunch:
+   [crunch] Crunching PNG Files in source dir: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\res
+   [crunch] To destination dir: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\res
+   [crunch] Crunched 0 PNG files to update cache
+
+-package-resources:
+     [echo] Library project: do not package resources...
+
+-package:
+     [echo] Library project: do not package apk...
+
+-post-package:
+
+-do-debug:
+     [echo] Library project: do not create apk...
+[propertyfile] Creating new property file: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\build.prop
+[propertyfile] Updating property file: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\build.prop
+[propertyfile] Updating property file: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\build.prop
+[propertyfile] Updating property file: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\build.prop
+
+-post-build:
+
+debug:
+
+-code-gen:
+[mergemanifest] Merging AndroidManifest files into one.
+[mergemanifest] Manifest merger disabled. Using project manifest only.
+     [echo] Handling aidl files...
+     [aidl] No AIDL files to compile.
+     [echo] ----------
+     [echo] Handling RenderScript files...
+     [echo] ----------
+     [echo] Handling Resources...
+     [aapt] Generating resource IDs...
+     [echo] ----------
+     [echo] Handling BuildConfig class...
+[buildconfig] Generating BuildConfig class.
+
+-pre-compile:
+
+-compile:
+    [javac] Compiling 3 source files to D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\classes
+    [javac] warning: [options] source value 1.5 is obsolete and will be removed in a future release
+    [javac] warning: [options] target value 1.5 is obsolete and will be removed in a future release
+    [javac] warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+    [javac] 3 warnings
+
+-post-compile:
+
+-obfuscate:
+
+-dex:
+      [dex] input: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\classes
+      [dex] input: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\classes.jar
+      [dex] input: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\libs\com.android.vending.expansion.zipfile.jar
+      [dex] input: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\libs\httpclient-4.4.1.1.jar
+      [dex] input: D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\libs\android-async-http-1.4.9.jar
+      [dex] Pre-Dexing D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\bin\classes.jar -> classes-30a1741daaae18c28ebdbc779fb62486.jar
+      [dex] Pre-Dexing D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\libs\com.android.vending.expansion.zipfile.jar -> com.android.vending.expansion.zipfile-6bb3ae4a85afb7f24cb3a692da0eaf79.jar
+      [dex] Pre-Dexing D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\libs\httpclient-4.4.1.1.jar -> httpclient-4.4.1.1-1b368214c4381ba92a2405902da36813.jar
+      [dex] Pre-Dexing D:\Programs\Android_Developing\FlappyBird_Try2\cocos2d\cocos\platform\android\java\libs\android-async-http-1.4.9.jar -> android-async-http-1.4.9-1952132697bf6a66cad5bc6d2f2137ed.jar
+      [dex] Converting compiled files and external libraries into D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\classes.dex...
+       [dx] Merged dex #1 (6 defs/1.6KiB)
+       [dx] Merged dex #2 (61 defs/106.4KiB)
+       [dx] Merged dex #3 (127 defs/143.2KiB)
+       [dx] Merged dex #4 (4 defs/15.8KiB)
+       [dx] Merged dex #5 (797 defs/844.3KiB)
+       [dx] Result is 995 defs/1374.7KiB. Took 0.4s
+
+-crunch:
+   [crunch] Crunching PNG Files in source dir: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\res
+   [crunch] To destination dir: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\res
+   [crunch] Processing image to cache: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\res\drawable-hdpi\icon.png => D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\res\drawable-hdpi\icon.png
+   [crunch]   (processed image to cache entry D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\res\drawable-hdpi\icon.png: 94% size of source)
+   [crunch] Processing image to cache: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\res\drawable-ldpi\icon.png => D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\res\drawable-ldpi\icon.png
+   [crunch]   (processed image to cache entry D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\res\drawable-ldpi\icon.png: 0% size of source)
+   [crunch] Processing image to cache: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\res\drawable-mdpi\icon.png => D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\res\drawable-mdpi\icon.png
+   [crunch]   (processed image to cache entry D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\res\drawable-mdpi\icon.png: 87% size of source)
+   [crunch] Crunched 3 PNG files to update cache
+
+-package-resources:
+     [aapt] Creating full resource package...
+     [aapt]     (skipping file '.gitkeep' due to ANDROID_AAPT_IGNORE pattern '.*')
+
+-package:
+[apkbuilder] Current build type is different than previous build: forced apkbuilder run.
+[apkbuilder] Creating FlappyBird_Try2-debug-unaligned.apk and signing it with a debug key...
+
+-post-package:
+
+-do-debug:
+ [zipalign] Running zip align on final apk...
+     [echo] Debug Package: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\FlappyBird_Try2-debug.apk
+[propertyfile] Creating new property file: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\build.prop
+[propertyfile] Updating property file: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\build.prop
+[propertyfile] Updating property file: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\build.prop
+[propertyfile] Updating property file: D:\Programs\Android_Developing\FlappyBird_Try2\proj.android\bin\build.prop
+
+-post-build:
+
+debug:
+
+BUILD SUCCESSFUL
+Total time: 27 seconds
+Move apk to D:\Programs\Android_Developing\FlappyBird_Try2\bin\debug\android
+Build succeed.

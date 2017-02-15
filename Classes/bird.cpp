@@ -14,7 +14,7 @@ const float UP_ROT_ANGALE = -50;
 const float DOWN_ROT_ANGLE = 90;
 const float DOWN_ROT_SPEED = 280;
 
-void Bird::Init(Layer* layer)
+bool Bird::init()
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Point center = Point(visibleSize.width / 2.0f, visibleSize.height / 2.0f);
@@ -31,25 +31,39 @@ void Bird::Init(Layer* layer)
 	physBody->setRotationEnable(false);
 	m_body->setPhysicsBody(physBody);
 
+	this->addChild(m_body);
+
 	Reset();
 
-	layer->addChild(m_body, BIRD_Z_INDEX);
+	return true;
 }
 
-void Bird::Update(float elapsedTime)
+void Bird::onEnter()
+{
+	Node::onEnter();
+	this->scheduleUpdate();
+}
+
+void Bird::onExit()
+{
+	Node::onExit();
+	this->unscheduleUpdate();
+}
+
+void Bird::update(float dt)
 {
 	if (m_status == BirdStatus::IDLE)
 	{
-		Idle(elapsedTime);
+		Idle(dt);
 	}
 	else if (m_status == BirdStatus::FLAPPING)
 	{
-		RotateBird(elapsedTime);
+		RotateBird(dt);
 	}
 
 	if (m_status != BirdStatus::DEAD)
 	{
-		FlappingAnimate(elapsedTime);
+		FlappingAnimate(dt);
 	}
 }
 

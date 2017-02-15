@@ -7,7 +7,6 @@ const float WORLD_GRAVITY = 2400;
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::createWithPhysics();
-	//scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
 	scene->getPhysicsWorld()->setGravity(Vect(0, -WORLD_GRAVITY));
 
 	auto layer = GameScene::create();
@@ -28,15 +27,13 @@ bool GameScene::init()
 	auto winSize = Director::getInstance()->getVisibleSize();
 	Vec2 center = Vec2(winSize * 0.5f);
 
-	m_background.Init(this);
-	m_bird.Init(this);
-	m_interface.Init(this);
+	m_bird = new Bird();
+	m_map = new GameMap();
 
-	auto mapEdge = PhysicsBody::createEdgeBox(winSize);
-	auto edgeNode = Node::create();
-	edgeNode->addComponent(mapEdge);
-	edgeNode->setPosition(center);
-	this->addChild(edgeNode);
+	m_bird->init();
+	m_map->init();
+
+	m_interface.Init(this);
 
 	auto collideListener = EventListenerPhysicsContact::create();
 	collideListener->onContactBegin = CC_CALLBACK_1(GameScene::IsBirdCollideAny, this);
@@ -54,17 +51,18 @@ bool GameScene::init()
 	schedule(schedule_selector(GameScene::Update));
 	SetBehavoir(GameBehavior::START);
 
+	this->addChild(m_map);
+	this->addChild(m_bird);
+
 	return true;
 }
 
 void GameScene::Update(float elapsedTime)
 {
 	float unreachableHeight = Director::getInstance()->getVisibleSize().height;
-	float birdHeight = m_bird.GetPosition().y;
+	float birdHeight = m_bird->GetPosition().y;
 
-	m_bird.Update(elapsedTime);
-	m_interface.Update(m_bird.GetPosition());
-	m_background.Update();
+	m_interface.Update(m_bird->GetPosition());
 
 	if (m_interface.GetPointsCount() == POINTS_MAX ||
 		birdHeight > unreachableHeight ||
@@ -79,12 +77,12 @@ bool GameScene::HandleTouch(Touch* touch, Event* event)
 	switch (m_behavior)
 	{
 	case GameBehavior::START:
-		m_bird.Jump();
+		m_bird->Jump();
 		SetBehavoir(GameBehavior::GAMEPLAY);
 		break;
 
 	case GameBehavior::GAMEPLAY:
-		m_bird.Jump();
+		m_bird->Jump();
 		break;
 
 	case GameBehavior::GAMEOVER:
@@ -107,20 +105,20 @@ void GameScene::SetBehavoir(GameBehavior newBehavior)
 	switch (newBehavior)
 	{
 	case GameBehavior::START:
-		m_bird.Reset();
-		m_background.Reset();
+		m_bird->Reset();
+		m_map->Reset();
 		m_interface.Reset();
 		break;
 
 	case GameBehavior::GAMEPLAY:
 		m_interface.SetGameplayUI();
-		m_background.StartMotion();
+		m_map->StartMotion();
 		break;
 
 	case GameBehavior::GAMEOVER:
 		m_interface.SetGameoverUI();
-		m_bird.Death();
-		m_background.StopMotion();
+		m_bird->Death();
+		m_map->StopMotion();
 		break;
 	default:
 		break;

@@ -19,9 +19,9 @@ const float UPPER_SCREEN_TUBE_THRESHOLD = 0.90f;
 
 const float TUBES_SPEED = 350;
 
-void GameMap::Init(Layer* layer)
+bool GameMap::init()
 {
-	Size winSize = layer->getContentSize();
+	Size winSize = Director::getInstance()->getVisibleSize();
 	Vec2 center = Vec2(winSize * 0.5f);
 
 	m_background = Sprite::create("textures/background.png");
@@ -32,19 +32,27 @@ void GameMap::Init(Layer* layer)
 	m_city->setAnchorPoint(Vec2(0.5f, 0));
 	m_city->setPosition(center.x, CITY_OFFSET_X);
 
-	layer->addChild(m_background, SKY_Z_INDEX);
-	layer->addChild(m_city, CITY_Z_INDEX);
+	auto mapEdge = PhysicsBody::createEdgeBox(winSize);
+	auto edgeNode = Node::create();
+	edgeNode->addComponent(mapEdge);
+	edgeNode->setPosition(center);
+
+	this->addChild(edgeNode);
+	this->addChild(m_background, SKY_Z_INDEX);
+	this->addChild(m_city, CITY_Z_INDEX);
 
 	auto tubesCount = static_cast<int>(winSize.width / TUBES_INTERNAL_OFFSET_X) + 2;
 
-	InitGround(layer);
-	InitTubes(layer, tubesCount);
-	InitPointsBodies(layer);
+	InitGround();
+	InitTubes(tubesCount);
+	InitPointsBodies();
 
 	Reset();
+
+	return true;
 }
 
-void GameMap::InitGround(Layer* layer)
+void GameMap::InitGround()
 {
 	m_ground = Sprite::create("textures/ground.png");
 	m_ground->setAnchorPoint(Vec2(0, 0));
@@ -56,12 +64,12 @@ void GameMap::InitGround(Layer* layer)
 	groundBody->setContactTestBitmask(true);
 	m_ground->setPhysicsBody(groundBody);
 
-	layer->addChild(m_ground, GROUND_Z_INDEX);
+	this->addChild(m_ground, GROUND_Z_INDEX);
 }
 
-void GameMap::InitTubes(Layer* layer, int tubesCount)
+void GameMap::InitTubes(int tubesCount)
 {
-	Size winSize = layer->getContentSize();
+	Size winSize = Director::getInstance()->getVisibleSize();
 	Vec2 center = Vec2(winSize * 0.5f);
 
 	for (size_t i = 0; i != tubesCount; i++)
@@ -85,14 +93,14 @@ void GameMap::InitTubes(Layer* layer, int tubesCount)
 		m_tubes.push_back(topTube);
 		m_tubes.push_back(bottomTube);
 
-		layer->addChild(topTube, TUBE_Z_INDEX);
-		layer->addChild(bottomTube, TUBE_Z_INDEX);
+		this->addChild(topTube, TUBE_Z_INDEX);
+		this->addChild(bottomTube, TUBE_Z_INDEX);
 	}
 }
 
-void GameMap::InitPointsBodies(Layer* layer)
+void GameMap::InitPointsBodies()
 {
-	Size winSize = layer->getContentSize();
+	Size winSize = Director::getInstance()->getVisibleSize();
 	
 	for (size_t i = 0; i <= m_tubes.size(); i += 2)
 	{
@@ -104,8 +112,20 @@ void GameMap::InitPointsBodies(Layer* layer)
 		node->addComponent(body);
 		m_pointsBodies.push_back(body);
 
-		layer->addChild(node);
+		this->addChild(node);
 	}
+}
+
+void GameMap::onEnter()
+{
+	Node::onEnter();
+	this->scheduleUpdate();
+}
+
+void GameMap::onExit()
+{
+	Node::onExit();
+	this->unscheduleUpdate();
 }
 
 void GameMap::StartMotion()
@@ -131,7 +151,7 @@ void GameMap::StopMotion()
 	m_ground->stopAllActions();
 }
 
-void GameMap::Update()
+void GameMap::update(float elapsedTime)
 {
 	UpdateGround();
 	UpdateTubes();

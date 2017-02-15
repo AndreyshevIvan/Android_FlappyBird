@@ -5,14 +5,17 @@
 #include "constants.h"
 #include <vector>
 
-class GameMap
+class GameMap : public cocos2d::Node
 {
 public:
-	void Init(cocos2d::Layer* layer);
+	bool init() override;
 
+
+	void onEnter();
+	void onExit();
 	void StopMotion();
 	void StartMotion();
-	void Update();
+	void update(float elapsedTime) override;
 
 	cocos2d::PhysicsBody* GetGroundBody();
 	std::vector<cocos2d::PhysicsBody*> GetTubesBodies();
@@ -27,9 +30,9 @@ private:
 	std::vector<cocos2d::Sprite*> m_tubes;
 	std::vector<cocos2d::PhysicsBody*> m_pointsBodies;
 
-	void InitGround(cocos2d::Layer* layer);
-	void InitTubes(cocos2d::Layer* layer, int tubesCount);
-	void InitPointsBodies(cocos2d::Layer* layer);
+	void InitGround();
+	void InitTubes(int tubesCount);
+	void InitPointsBodies();
 
 	void UpdateGround();
 	void UpdateTubes();

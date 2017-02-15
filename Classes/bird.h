@@ -13,12 +13,15 @@ enum struct BirdStatus
 	DEAD,
 };
 
-class Bird
+class Bird : public cocos2d::Node
 {
 public:
-	void Init(cocos2d::Layer* layer);
+	bool init() override;
 
-	void Update(float elapsedTime);
+	void onEnter() override;
+	void onExit() override;
+	void update(float dt) override;
+
 	void Jump();
 
 	cocos2d::Point GetPosition();
