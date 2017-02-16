@@ -7,6 +7,7 @@ const float WORLD_GRAVITY = 2400;
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::createWithPhysics();
+	scene->getPhysicsWorld()->setDebugDrawMask(3);
 	scene->getPhysicsWorld()->setGravity(Vect(0, -WORLD_GRAVITY));
 
 	auto layer = GameScene::create();

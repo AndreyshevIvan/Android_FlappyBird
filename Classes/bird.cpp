@@ -7,6 +7,7 @@ const int BIRD_Z_INDEX = 10;
 const int BIRD_FRAMES = 4;
 const float BIRD_ANIMATE_FPS = 10;
 
+const float RADIUS_FACTOR = 0.85f;
 const float BIRD_POS_FACTOR_X = 0.2f;
 const float BIRD_JUMP_VELOCITY = 1000;
 
@@ -17,15 +18,15 @@ const float DOWN_ROT_SPEED = 280;
 bool Bird::init()
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Point center = Point(visibleSize.width / 2.0f, visibleSize.height / 2.0f);
+	Point center = Point(visibleSize * 0.5f);
 
 	m_body = Sprite::create("textures/bird.png");
 	const float bodyWidth = m_body->getContentSize().width / static_cast<float>(BIRD_FRAMES);
 	const float bodyHeight = m_body->getContentSize().height;
 	m_body->setContentSize(Size(bodyWidth, bodyHeight));
 
-	auto radius = (bodyWidth < bodyHeight) ? bodyWidth / 2.0f : bodyHeight / 2.0f;
-	auto physBody = PhysicsBody::createCircle(radius);
+	auto diameter = (bodyWidth < bodyHeight) ? bodyWidth : bodyHeight;
+	auto physBody = PhysicsBody::createCircle(diameter / 2.0f * RADIUS_FACTOR);
 	physBody->setCollisionBitmask(BIRD_BITMASK);
 	physBody->setContactTestBitmask(true);
 	physBody->setRotationEnable(false);
@@ -46,6 +47,7 @@ void Bird::onEnter()
 void Bird::onExit()
 {
 	this->unscheduleUpdate();
+	this->stopAllActions();
 	this->removeAllChildren();
 	Node::onExit();
 }

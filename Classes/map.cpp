@@ -125,6 +125,8 @@ void GameMap::onEnter()
 void GameMap::onExit()
 {
 	this->unscheduleUpdate();
+	this->stopAllActions();
+	this->removeAllChildren();
 	Node::onExit();
 }
 

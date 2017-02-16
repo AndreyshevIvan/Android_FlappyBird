@@ -32,14 +32,12 @@ bool GameInterface::init()
 		text->enableOutline(FONT_OUTLINE_COLOR, FONT_OUTLINE_THICKNESS);
 		text->setAnchorPoint(anchorPoint);
 		text->setPosition(center + offset);
-		this->addChild(text, INTERFACE_Z_INDEX);
 		return text;
 	};
 
 	auto createSprite = [&](std::string const& texturePath, Vec2 const& offset = Vec2::ZERO) {
 		auto sprite = Sprite::create(texturePath);
 		sprite->setPosition(center + offset);
-		this->addChild(sprite, INTERFACE_Z_INDEX);
 		return sprite;
 	};
 
@@ -69,10 +67,21 @@ bool GameInterface::init()
 void GameInterface::onEnter()
 {
 	Node::onEnter();
+	this->addChild(m_gameOver, INTERFACE_Z_INDEX);
+	this->addChild(m_scoreTab, INTERFACE_Z_INDEX);
+	this->addChild(m_guide, INTERFACE_Z_INDEX);
+	this->addChild(m_gameName, INTERFACE_Z_INDEX);
+	this->addChild(m_newHighScoreTab, INTERFACE_Z_INDEX);
+	this->addChild(m_medal, INTERFACE_Z_INDEX);
+	this->addChild(m_points, INTERFACE_Z_INDEX);
+	this->addChild(m_score, INTERFACE_Z_INDEX);
+	this->addChild(m_bestScore, INTERFACE_Z_INDEX);
 }
 
 void GameInterface::onExit()
 {
+	this->stopAllActions();
+	this->removeAllChildren();
 	Node::onExit();
 }
 
