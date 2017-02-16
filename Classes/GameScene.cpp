@@ -29,12 +29,26 @@ bool GameScene::init()
 
 	m_bird = new Bird();
 	m_map = new GameMap();
+	m_interface = new GameInterface();
 
 	m_bird->init();
 	m_map->init();
+	m_interface->init();
 
-	m_interface.Init(this);
+	AddListeners();
+	scheduleUpdate();
 
+	SetBehavoir(GameBehavior::START);
+
+	this->addChild(m_map);
+	this->addChild(m_bird);
+	this->addChild(m_interface);
+
+	return true;
+}
+
+void GameScene::AddListeners()
+{
 	auto collideListener = EventListenerPhysicsContact::create();
 	collideListener->onContactBegin = CC_CALLBACK_1(GameScene::IsBirdCollideAny, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(collideListener, this);
@@ -47,24 +61,16 @@ bool GameScene::init()
 	auto pKeybackListener = EventListenerKeyboard::create();
 	pKeybackListener->onKeyReleased = CC_CALLBACK_2(GameScene::onKeyReleased, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(pKeybackListener, this);
-
-	schedule(schedule_selector(GameScene::Update));
-	SetBehavoir(GameBehavior::START);
-
-	this->addChild(m_map);
-	this->addChild(m_bird);
-
-	return true;
 }
 
-void GameScene::Update(float elapsedTime)
+void GameScene::update(float elapsedTime)
 {
 	float unreachableHeight = Director::getInstance()->getVisibleSize().height;
 	float birdHeight = m_bird->GetPosition().y;
 
-	m_interface.Update(m_bird->GetPosition());
+	m_interface->Update(m_bird->GetPosition());
 
-	if (m_interface.GetPointsCount() == POINTS_MAX ||
+	if (m_interface->GetPointsCount() == POINTS_MAX ||
 		birdHeight > unreachableHeight ||
 		birdHeight < 0)
 	{
@@ -86,7 +92,7 @@ bool GameScene::HandleTouch(Touch* touch, Event* event)
 		break;
 
 	case GameBehavior::GAMEOVER:
-		if (m_interface.IsGameoverInit())
+		if (m_interface->IsGameoverInit())
 		{
 			SetBehavoir(GameBehavior::START);
 		}
@@ -107,16 +113,16 @@ void GameScene::SetBehavoir(GameBehavior newBehavior)
 	case GameBehavior::START:
 		m_bird->Reset();
 		m_map->Reset();
-		m_interface.Reset();
+		m_interface->Reset();
 		break;
 
 	case GameBehavior::GAMEPLAY:
-		m_interface.SetGameplayUI();
+		m_interface->SetGameplayUI();
 		m_map->StartMotion();
 		break;
 
 	case GameBehavior::GAMEOVER:
-		m_interface.SetGameoverUI();
+		m_interface->SetGameoverUI();
 		m_bird->Death();
 		m_map->StopMotion();
 		break;
@@ -139,7 +145,7 @@ bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 	else if ((bitMaskA == BIRD_BITMASK && bitMaskB == POINT_BITMASK) ||
 			(bitMaskA == POINT_BITMASK && bitMaskB == BIRD_BITMASK))
 	{
-		m_interface.AddPoint();
+		m_interface->AddPoint();
 		return false;
 	}
 

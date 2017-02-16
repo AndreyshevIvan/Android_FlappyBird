@@ -6,17 +6,15 @@ USING_NS_CC;
 const int INTERFACE_Z_INDEX = 100;
 
 const int FONT_POINTS_SIZE = 90;
-const int FONST_SCORE_SIZE = 60;
+const int FONT_SCORE_SIZE = 60;
 
 const Vec2 SCORE_OFFSET = Vec2(238, 32);
 const Vec2 SCORE_BEST_OFFSET = Vec2(238, -78);
 const Vec2 MEDAL_OFFSET = Vec2(-172, -19);
 const Vec2 NEWTAB_OFFSET = Vec2(115, -21);
-const float GAMENAME_OFFSET_Y = 360;
-const float GAMEOVER_OFFSET_Y = 360;
-const float POINTS_OFFSET_Y = 512;
-
-const int ACTION_MOVE_GAMEOVER_UI_TAG = 1;
+const Vec2 GAMENAME_OFFSET = Vec2(0, 360);
+const Vec2 GAMEOVER_OFFSET = Vec2(0, 360);
+const Vec2 POINTS_OFFSET = Vec2(0, 512);
 
 const float GAMEOVER_INIT_DURATION = 0.8f;
 
@@ -24,61 +22,58 @@ const int MEDALS_COUNT = 4;
 
 const char* HIGHTSCORE_KEY = "FB_BY_IVAN_HIGHTSCORE";
 
-void GameInterface::Init(Layer* layer)
+bool GameInterface::init()
 {
 	Size winSize = Director::getInstance()->getVisibleSize();
-	Point center = Point(winSize.width / 2.0f, winSize.height / 2.0f);
+	Point center = Point(winSize * 0.5f);
 
-	m_points = Label::createWithTTF("", "fonts/FlappyBird.ttf", FONT_POINTS_SIZE);
-	m_points->enableOutline(FONT_OUTLINE_COLOR, FONT_OUTLINE_THICKNESS);
-	m_points->setAnchorPoint(Vec2(0.5f, 0.5f));
-	m_points->setPosition(Point(center.x, center.y + POINTS_OFFSET_Y));
+	auto createText = [&](int fontSize, Vec2 const& anchorPoint, Vec2 const& offset) {
+		auto text = Label::createWithTTF("", "fonts/FlappyBird.ttf", fontSize);
+		text->enableOutline(FONT_OUTLINE_COLOR, FONT_OUTLINE_THICKNESS);
+		text->setAnchorPoint(anchorPoint);
+		text->setPosition(center + offset);
+		this->addChild(text, INTERFACE_Z_INDEX);
+		return text;
+	};
 
-	m_gameOver = Sprite::create("textures/gameOver.png");
-	m_gameOver->setPosition(Point(center.x, center.y + GAMEOVER_OFFSET_Y));
+	auto createSprite = [&](std::string const& texturePath, Vec2 const& offset = Vec2::ZERO) {
+		auto sprite = Sprite::create(texturePath);
+		sprite->setPosition(center + offset);
+		this->addChild(sprite, INTERFACE_Z_INDEX);
+		return sprite;
+	};
 
-	m_scoreTab = Sprite::create("textures/gameOverMenu.png");
-	m_scoreTab->setPosition(center);
+	m_gameOver = createSprite("textures/gameOver.png", GAMEOVER_OFFSET);
+	m_scoreTab = createSprite("textures/gameOverMenu.png");
+	m_guide = createSprite("textures/guide.png");
+	m_gameName = createSprite("textures/title.png", GAMENAME_OFFSET);
+	m_newHighScoreTab = createSprite("textures/newScore.png", NEWTAB_OFFSET);
+	m_medal = createSprite("textures/medals.png", MEDAL_OFFSET);
 
-	m_score = Label::createWithTTF("", "fonts/FlappyBird.ttf", FONST_SCORE_SIZE);
-	m_score->enableOutline(FONT_OUTLINE_COLOR, FONT_OUTLINE_THICKNESS);
-	m_score->setAnchorPoint(Vec2(1, 0.5f));
-	m_score->setPosition(center + SCORE_OFFSET);
-
-	m_bestScore = Label::createWithTTF("1337", "fonts/FlappyBird.ttf", FONST_SCORE_SIZE);
-	m_bestScore->enableOutline(FONT_OUTLINE_COLOR, FONT_OUTLINE_THICKNESS);
-	m_bestScore->setAnchorPoint(Vec2(1, 0.5f));
-	m_bestScore->setPosition(center + SCORE_BEST_OFFSET);
-
-	m_guide = Sprite::create("textures/guide.png");
-	m_guide->setPosition(center);
-
-	m_gameName = Sprite::create("textures/title.png");
-	m_gameName->setPosition(Point(center.x, center.y + GAMENAME_OFFSET_Y));
-
-	m_medal = Sprite::create("textures/medals.png");
 	const float medalWidth = m_medal->getContentSize().width / MEDALS_COUNT;
 	const float medalHeight = m_medal->getContentSize().height;
 	m_medal->setContentSize(Size(medalWidth, medalHeight));
-	m_medal->setPosition(center + MEDAL_OFFSET);
 	m_medal->setTextureRect(Rect(0, 0, medalWidth, medalHeight));
 
-	m_newHighScoreTab = Sprite::create("textures/newScore.png");
-	m_newHighScoreTab->setPosition(center + NEWTAB_OFFSET);
+	m_points = createText(FONT_POINTS_SIZE, Vec2(0.5f, 0.5f), POINTS_OFFSET);
+	m_score = createText(FONT_SCORE_SIZE, Vec2(1, 0.5f), SCORE_OFFSET);
+	m_bestScore = createText(FONT_SCORE_SIZE, Vec2(1, 0.5f), SCORE_BEST_OFFSET);
 
 	UserDefault* memory = UserDefault::getInstance();
 	auto highScore = memory->getIntegerForKey(HIGHTSCORE_KEY, 0);
 	memory->flush();
 
-	layer->addChild(m_points, INTERFACE_Z_INDEX);
-	layer->addChild(m_guide, INTERFACE_Z_INDEX);
-	layer->addChild(m_gameName, INTERFACE_Z_INDEX);
-	layer->addChild(m_gameOver, INTERFACE_Z_INDEX);
-	layer->addChild(m_scoreTab, INTERFACE_Z_INDEX);
-	layer->addChild(m_score, INTERFACE_Z_INDEX);
-	layer->addChild(m_bestScore, INTERFACE_Z_INDEX);
-	layer->addChild(m_newHighScoreTab, INTERFACE_Z_INDEX);
-	layer->addChild(m_medal, INTERFACE_Z_INDEX);
+	return true;
+}
+
+void GameInterface::onEnter()
+{
+	Node::onEnter();
+}
+
+void GameInterface::onExit()
+{
+	Node::onExit();
 }
 
 void GameInterface::SetStartUI()
@@ -115,7 +110,6 @@ void GameInterface::SetGameoverUI()
 	}
 
 	auto moveElemets = MoveBy::create(GAMEOVER_INIT_DURATION, Vec2(0, -center.y));
-	moveElemets->setTag(ACTION_MOVE_GAMEOVER_UI_TAG);
 	auto easeCircle = EaseCircleActionOut::create(moveElemets->clone());
 
 	m_score->runAction(easeCircle->clone());
@@ -152,7 +146,7 @@ void GameInterface::ResetUI()
 	m_score->setPositionY(center.y + SCORE_OFFSET.y + center.y);
 	m_bestScore->setPositionY(center.y + SCORE_BEST_OFFSET.y + center.y);
 	m_scoreTab->setPositionY(center.y + center.y);
-	m_gameOver->setPositionY(center.y + GAMEOVER_OFFSET_Y + center.y);
+	m_gameOver->setPositionY(center.y + GAMEOVER_OFFSET.y + center.y);
 	m_medal->setPositionY(center.y + MEDAL_OFFSET.y + center.y);
 	m_newHighScoreTab->setPositionY(center.y + NEWTAB_OFFSET.y + center.y);
 }
@@ -247,7 +241,7 @@ void GameInterface::UpdateIdleInterface(Vec2 const& birdPosition)
 	auto namePosX = m_gameName->getPositionX();
 
 	m_guide->setPosition(Point(guidePosX, birdPosition.y));
-	m_gameName->setPosition(Point(namePosX, birdPosition.y + GAMENAME_OFFSET_Y));
+	m_gameName->setPosition(Point(namePosX, birdPosition.y + GAMENAME_OFFSET.y));
 }
 
 std::string PointsToStr(unsigned points)

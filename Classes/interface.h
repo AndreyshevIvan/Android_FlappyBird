@@ -6,10 +6,10 @@
 #include "sound.h"
 #include <sstream>
 
-class GameInterface
+class GameInterface : public cocos2d::Node
 {
 public:
-	void Init(cocos2d::Layer* layer);
+	bool init() override;
 
 	void AddPoint();
 	unsigned GetPointsCount();
@@ -38,6 +38,9 @@ private:
 	cocos2d::Sprite* m_gameOver;
 	cocos2d::Sprite* m_gameName;
 	cocos2d::Sprite* m_guide;
+
+	void onEnter() override;
+	void onExit() override;
 
 	void UpdateIdleInterface(cocos2d::Vec2 const& birdPosition);
 	std::string GetHighScoreStr();

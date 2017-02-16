@@ -18,8 +18,6 @@ class Bird : public cocos2d::Node
 public:
 	bool init() override;
 
-	void onEnter() override;
-	void onExit() override;
 	void update(float dt) override;
 
 	void Jump();
@@ -38,6 +36,9 @@ private:
 	float m_topOfScreen;
 	float m_idleAnimTime;
 	float m_flappingAnimTime;
+
+	void onEnter() override;
+	void onExit() override;
 
 	void Idle(float elapsedTime);
 	void RotateBird(float elapsedTime);

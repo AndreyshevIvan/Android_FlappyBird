@@ -31,8 +31,6 @@ bool Bird::init()
 	physBody->setRotationEnable(false);
 	m_body->setPhysicsBody(physBody);
 
-	this->addChild(m_body);
-
 	Reset();
 
 	return true;
@@ -41,13 +39,15 @@ bool Bird::init()
 void Bird::onEnter()
 {
 	Node::onEnter();
+	this->addChild(m_body);
 	this->scheduleUpdate();
 }
 
 void Bird::onExit()
 {
-	Node::onExit();
 	this->unscheduleUpdate();
+	this->removeAllChildren();
+	Node::onExit();
 }
 
 void Bird::update(float dt)

@@ -2,7 +2,7 @@
 
 USING_NS_CC;
 
-const float EFFECTS_VOLUME = 0.5f;
+const float EFFECTS_VOLUME = 0.1f;
 
 GameSound::GameSound()
 {
@@ -11,8 +11,10 @@ GameSound::GameSound()
 	m_audio->preloadEffect("sounds/point.wav");
 	m_audio->preloadEffect("sounds/hit.wav");
 	m_audio->preloadEffect("sounds/die.wav");
-	m_audio->preloadEffect("souns/wing.wav");
-	m_audio->preloadEffect("souns/swooshing.wav");
+	m_audio->preloadEffect("sounds/wing.wav");
+	m_audio->preloadEffect("sounds/swooshing.wav");
+
+	m_audio->setEffectsVolume(EFFECTS_VOLUME);
 }
 
 void GameSound::Wing()

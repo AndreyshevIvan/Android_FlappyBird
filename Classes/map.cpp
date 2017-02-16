@@ -124,8 +124,8 @@ void GameMap::onEnter()
 
 void GameMap::onExit()
 {
-	Node::onExit();
 	this->unscheduleUpdate();
+	Node::onExit();
 }
 
 void GameMap::StartMotion()

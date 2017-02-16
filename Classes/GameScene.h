@@ -27,14 +27,16 @@ private:
 	GameBehavior m_behavior;
 	Bird* m_bird;
 	GameMap* m_map;
-	GameInterface m_interface;
+	GameInterface* m_interface;
+
+	void AddListeners();
 
 	bool IsBirdCollideAny(cocos2d::PhysicsContact& contact);
 
 	void SetBehavoir(GameBehavior newBehavior);
 
 	bool HandleTouch(cocos2d::Touch* touch, cocos2d::Event* event);
-	void Update(float elapsedTime); 
+	void update(float elapsedTime); 
 	void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *pEvent) override;
 
 };
