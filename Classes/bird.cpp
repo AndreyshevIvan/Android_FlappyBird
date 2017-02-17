@@ -83,11 +83,16 @@ void Bird::Idle(float elapsedTime)
 	m_body->setPosition(GetPosition() - movement);
 }
 
+void Bird::StartFlapping()
+{
+	m_status = BirdStatus::FLAPPING;
+	m_body->getPhysicsBody()->setGravityEnable(true);
+	Jump();
+}
+
 void Bird::Jump()
 {
 	m_audio.Wing();
-	m_status = BirdStatus::FLAPPING;
-	m_body->getPhysicsBody()->setGravityEnable(true);
 	m_body->getPhysicsBody()->setVelocity(Vec2(0, BIRD_JUMP_VELOCITY));
 }
 

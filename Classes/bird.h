@@ -20,6 +20,7 @@ public:
 
 	void update(float dt) override;
 
+	void StartFlapping();
 	void Jump();
 
 	cocos2d::Point GetPosition();

@@ -20,7 +20,7 @@ public:
 	void SetGameplayUI();
 	void SetGameoverUI();
 
-	bool IsGameoverInit();
+	bool IsGameoverTableAppeared();
 
 	void Reset();
 

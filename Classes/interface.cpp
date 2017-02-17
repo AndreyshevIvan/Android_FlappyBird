@@ -103,7 +103,6 @@ void GameInterface::SetGameplayUI()
 void GameInterface::SetGameoverUI()
 {
 	ResetUI();
-
 	Point center = Director::getInstance()->getVisibleSize() * 0.5f;
 
 	SetMedal();
@@ -148,9 +147,7 @@ void GameInterface::ResetUI()
 	m_gameName->setVisible(false);
 	m_guide->setVisible(false);
 
-	m_score->stopAllActions();
-	m_scoreTab->stopAllActions();
-	m_gameOver->stopAllActions();
+	this->stopAllActions();
 
 	m_score->setPositionY(center.y + SCORE_OFFSET.y + center.y);
 	m_bestScore->setPositionY(center.y + SCORE_BEST_OFFSET.y + center.y);
@@ -168,18 +165,9 @@ void GameInterface::SetMedal()
 	{
 		m_medal->setVisible(true);
 
-		if (m_pointsCount >= POINTS_SILVER)
-		{
-			medalNumber = 1;
-		}
-		if (m_pointsCount >= POINTS_GOLD)
-		{
-			medalNumber = 2;
-		}
-		if (m_pointsCount >= POINTS_PLATINUM)
-		{
-			medalNumber = 3;
-		}
+		if (m_pointsCount >= POINTS_SILVER) medalNumber = 1;
+		if (m_pointsCount >= POINTS_GOLD) medalNumber = 2;
+		if (m_pointsCount >= POINTS_PLATINUM) medalNumber = 3;
 	}
 
 	const float size = m_medal->getContentSize().width;
@@ -213,7 +201,6 @@ std::string GameInterface::GetHighScoreStr()
 void GameInterface::Reset()
 {
 	SetStartUI();
-
 	m_pointsCount = 0;
 }
 
@@ -223,14 +210,9 @@ void GameInterface::Update(Vec2 const& birdPosition)
 	UpdateIdleInterface(birdPosition);
 }
 
-bool GameInterface::IsGameoverInit()
+bool GameInterface::IsGameoverTableAppeared()
 {
-	if (m_score->getNumberOfRunningActions() == 0)
-	{
-		return true;
-	}
-
-	return false;
+	return m_score->getNumberOfRunningActions() == 0;
 }
 
 void GameInterface::AddPoint()
@@ -255,10 +237,9 @@ void GameInterface::UpdateIdleInterface(Vec2 const& birdPosition)
 
 std::string PointsToStr(unsigned points)
 {
-	std::string pointsStr;
 	std::stringstream stream;
 	stream << points;
-	pointsStr = stream.str();
+	std::string pointsStr(stream.str());
 
 	return pointsStr;
 }

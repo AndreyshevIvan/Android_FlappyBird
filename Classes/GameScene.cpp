@@ -7,7 +7,7 @@ const float WORLD_GRAVITY = 2400;
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::createWithPhysics();
-	scene->getPhysicsWorld()->setDebugDrawMask(3);
+	//scene->getPhysicsWorld()->setDebugDrawMask(3);
 	scene->getPhysicsWorld()->setGravity(Vect(0, -WORLD_GRAVITY));
 
 	auto layer = GameScene::create();
@@ -50,26 +50,28 @@ bool GameScene::init()
 
 void GameScene::AddListeners()
 {
+	auto touchListener = EventListenerTouchOneByOne::create();
+	touchListener->onTouchBegan = [&](Touch* touch, Event* event) {
+		return onTouchBegan(touch, event);
+	};
+
 	auto collideListener = EventListenerPhysicsContact::create();
 	collideListener->onContactBegin = CC_CALLBACK_1(GameScene::IsBirdCollideAny, this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(collideListener, this);
-
-	auto touchListener = EventListenerTouchOneByOne::create();
-	touchListener->setSwallowTouches(true);
-	touchListener->onTouchBegan = CC_CALLBACK_2(GameScene::HandleTouch, this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
 	auto pKeybackListener = EventListenerKeyboard::create();
 	pKeybackListener->onKeyReleased = CC_CALLBACK_2(GameScene::onKeyReleased, this);
+	
+	_eventDispatcher->addEventListenerWithFixedPriority(touchListener, -1);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(collideListener, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(pKeybackListener, this);
 }
 
 void GameScene::update(float elapsedTime)
 {
+	m_interface->Update(m_bird->GetPosition());
+
 	float unreachableHeight = Director::getInstance()->getVisibleSize().height;
 	float birdHeight = m_bird->GetPosition().y;
-
-	m_interface->Update(m_bird->GetPosition());
 
 	if (m_interface->GetPointsCount() == POINTS_MAX ||
 		birdHeight > unreachableHeight ||
@@ -79,21 +81,20 @@ void GameScene::update(float elapsedTime)
 	}
 }
 
-bool GameScene::HandleTouch(Touch* touch, Event* event)
+bool GameScene::onTouchBegan(Touch* touch, Event* event)
 {
 	switch (m_behavior)
 	{
-	case GameBehavior::START:
-		m_bird->Jump();
-		SetBehavoir(GameBehavior::GAMEPLAY);
-		break;
-
 	case GameBehavior::GAMEPLAY:
 		m_bird->Jump();
 		break;
 
+	case GameBehavior::START:
+		SetBehavoir(GameBehavior::GAMEPLAY);
+		break;
+
 	case GameBehavior::GAMEOVER:
-		if (m_interface->IsGameoverInit())
+		if (m_interface->IsGameoverTableAppeared())
 		{
 			SetBehavoir(GameBehavior::START);
 		}
@@ -120,6 +121,7 @@ void GameScene::SetBehavoir(GameBehavior newBehavior)
 	case GameBehavior::GAMEPLAY:
 		m_interface->SetGameplayUI();
 		m_map->StartMotion();
+		m_bird->StartFlapping();
 		break;
 
 	case GameBehavior::GAMEOVER:
