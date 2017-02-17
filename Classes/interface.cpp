@@ -169,7 +169,7 @@ void GameInterface::SetMedal()
 		if (m_pointsCount >= POINTS_GOLD) medalNumber = 2;
 		if (m_pointsCount >= POINTS_PLATINUM) medalNumber = 3;
 	}
-
+	
 	const float size = m_medal->getContentSize().width;
 	m_medal->setTextureRect(Rect(medalNumber * size, 0, size, size));
 }

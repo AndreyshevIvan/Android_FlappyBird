@@ -39,7 +39,7 @@ bool GameScene::init()
 	AddListeners();
 	scheduleUpdate();
 
-	SetBehavoir(GameBehavior::START);
+	SetNewBehavior(BehaviorType::START);
 
 	this->addChild(m_map);
 	this->addChild(m_bird);
@@ -77,26 +77,78 @@ void GameScene::update(float elapsedTime)
 		birdHeight > unreachableHeight ||
 		birdHeight < 0)
 	{
-		SetBehavoir(GameBehavior::GAMEOVER);
+		SetNewBehavior(BehaviorType::GAMEOVER);
 	}
 }
 
+
+bool GameScene::onTouchBegan(Touch* touch, Event* event)
+{
+	PlayBehavior(m_behavior);
+	return true;
+}
+
+void GameScene::ChangeBehavior(BehaviorType const& newBehavior)
+{
+	m_behavior = newBehavior;
+}
+
+void GameScene::SetStartBehaviorOptions()
+{
+	m_bird->Reset();
+	m_map->Reset();
+	m_interface->Reset();
+}
+
+void GameScene::SetGameplayBehaviorOptions()
+{
+	m_interface->SetGameplayUI();
+	m_map->StartMotion();
+	m_bird->StartFlapping();
+}
+
+void GameScene::SetGameoverBehaviorOptions()
+{
+	m_interface->SetGameoverUI();
+	m_bird->Death();
+	m_map->StopMotion();
+}
+
+void GameScene::StartBehavior()
+{
+	SetNewBehavior(BehaviorType::GAMEPLAY);
+}
+
+void GameScene::GameplayBehavior()
+{
+	m_bird->Jump();
+}
+
+void GameScene::GameoverBehavior()
+{
+	if (m_interface->IsGameoverTableAppeared())
+	{
+		SetNewBehavior(BehaviorType::START);
+	}
+}
+
+/*
 bool GameScene::onTouchBegan(Touch* touch, Event* event)
 {
 	switch (m_behavior)
 	{
-	case GameBehavior::GAMEPLAY:
+	case BehaviorType::GAMEPLAY:
 		m_bird->Jump();
 		break;
 
-	case GameBehavior::START:
-		SetBehavoir(GameBehavior::GAMEPLAY);
+	case BehaviorType::START:
+		SetNewBehavior(BehaviorType::GAMEPLAY);
 		break;
 
-	case GameBehavior::GAMEOVER:
+	case BehaviorType::GAMEOVER:
 		if (m_interface->IsGameoverTableAppeared())
 		{
-			SetBehavoir(GameBehavior::START);
+			SetNewBehavior(BehaviorType::START);
 		}
 		break;
 	default:
@@ -106,25 +158,24 @@ bool GameScene::onTouchBegan(Touch* touch, Event* event)
 	return true;
 }
 
-void GameScene::SetBehavoir(GameBehavior newBehavior)
+void GameScene::SetBehavoir(BehaviorType newBehavior)
 {
-	m_behavior = newBehavior;
 
 	switch (newBehavior)
 	{
-	case GameBehavior::START:
+	case BehaviorType::START:
 		m_bird->Reset();
 		m_map->Reset();
 		m_interface->Reset();
 		break;
 
-	case GameBehavior::GAMEPLAY:
+	case BehaviorType::GAMEPLAY:
 		m_interface->SetGameplayUI();
 		m_map->StartMotion();
 		m_bird->StartFlapping();
 		break;
 
-	case GameBehavior::GAMEOVER:
+	case BehaviorType::GAMEOVER:
 		m_interface->SetGameoverUI();
 		m_bird->Death();
 		m_map->StopMotion();
@@ -133,6 +184,7 @@ void GameScene::SetBehavoir(GameBehavior newBehavior)
 		break;
 	}
 }
+*/
 
 bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 {
@@ -142,7 +194,7 @@ bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 	if ((bitMaskA == MAP_BITMASK && bitMaskB == BIRD_BITMASK) ||
 		(bitMaskA == BIRD_BITMASK && bitMaskB == MAP_BITMASK))
 	{
-		SetBehavoir(GameBehavior::GAMEOVER);
+		SetNewBehavior(BehaviorType::GAMEOVER);
 		return true;
 	}
 	else if ((bitMaskA == BIRD_BITMASK && bitMaskB == POINT_BITMASK) ||

@@ -8,15 +8,9 @@
 #include "map.h"
 #include "interface.h"
 #include "sound.h"
+#include "gameBehavior.h"
 
-enum struct GameBehavior
-{
-	START,
-	GAMEPLAY,
-	GAMEOVER,
-};
-
-class GameScene : public cocos2d::Layer
+class GameScene : public cocos2d::Layer, protected GameBehavior
 {
 public:
 	static cocos2d::Scene* createScene();
@@ -24,7 +18,7 @@ public:
 	CREATE_FUNC(GameScene);
 
 private:
-	GameBehavior m_behavior;
+	BehaviorType m_behavior;
 	Bird* m_bird;
 	GameMap* m_map;
 	GameInterface* m_interface;
@@ -33,11 +27,19 @@ private:
 
 	bool IsBirdCollideAny(cocos2d::PhysicsContact& contact);
 
-	void SetBehavoir(GameBehavior newBehavior);
-
 	bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) override;
 	void update(float elapsedTime); 
 	void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *pEvent) override;
+
+	void ChangeBehavior(BehaviorType const& newBehavior) override;
+
+	void SetStartBehaviorOptions() override;
+	void SetGameplayBehaviorOptions() override;
+	void SetGameoverBehaviorOptions() override;
+
+	void StartBehavior() override;
+	void GameplayBehavior() override;
+	void GameoverBehavior() override;
 
 };
 
