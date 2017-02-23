@@ -31,9 +31,9 @@ bool GameScene::init()
 	m_map = new GameMap();
 	m_interface = new GameInterface();
 
-	m_startBehavior = new StartGameBehavior(m_bird, m_map, m_interface);
-	m_gameplayBehavior = new GameplayBehavior(m_bird, m_map, m_interface);
-	m_gameoverBehavior = new GameoverBehavior(m_bird, m_map, m_interface);
+	m_startBehavior = new StartGameBehavior();
+	m_gameplayBehavior = new GameplayBehavior();
+	m_gameoverBehavior = new GameoverBehavior();
 
 	AddListeners();
 	scheduleUpdate();
@@ -91,7 +91,7 @@ bool GameScene::onTouchBegan(Touch* touch, Event* event)
 		SetBehavior(m_startBehavior);
 	}
 
-	m_currBehavior->Behavior();
+	m_currBehavior->Behavior(m_bird, m_map, m_interface);
 
 	return true;
 }
@@ -99,7 +99,7 @@ bool GameScene::onTouchBegan(Touch* touch, Event* event)
 void GameScene::SetBehavior(GameBehavior* newBehavior)
 {
 	m_currBehavior = newBehavior;
-	m_currBehavior->UpdateOptions();
+	m_currBehavior->UpdateOptions(m_bird, m_map, m_interface);
 }
 
 bool GameScene::IsBirdCollideAny(PhysicsContact& contact)

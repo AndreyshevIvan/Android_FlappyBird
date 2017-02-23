@@ -4,11 +4,13 @@
 #include "cocos2d.h"
 #include "constants.h"
 
+#include "bird.h"
+#include "map.h"
+#include "interface.h"
 #include "gameBehavior.h"
-#include "gameEntities.h"
 #include "sound.h"
 
-class GameScene : public cocos2d::Layer, public GameEntities
+class GameScene : public cocos2d::Layer
 {
 public:
 	static cocos2d::Scene* createScene();
@@ -16,8 +18,11 @@ public:
 	CREATE_FUNC(GameScene);
 
 private:
-	GameBehavior* m_currBehavior;
+	Bird* m_bird;
+	GameMap* m_map;
+	GameInterface* m_interface;
 
+	GameBehavior* m_currBehavior;
 	GameBehavior* m_startBehavior;
 	GameBehavior* m_gameplayBehavior;
 	GameBehavior* m_gameoverBehavior;

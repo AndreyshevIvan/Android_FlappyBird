@@ -4,77 +4,59 @@
 #include "cocos2d.h"
 #include "constants.h"
 
-#include "gameEntities.h"
+#include "bird.h"
+#include "map.h"
+#include "interface.h"
 
 class GameBehavior
 {
 public:
-	virtual void UpdateOptions() = 0;
-	virtual void Behavior() = 0;
+	virtual void UpdateOptions(Bird* bird, GameMap* map, GameInterface* gameInterface) = 0;
+	virtual void Behavior(Bird* bird, GameMap* map, GameInterface* gameInterface) = 0;
 
 };
 
-class StartGameBehavior : public GameBehavior, public GameEntities
+class StartGameBehavior : public GameBehavior
 {
 public:
-	StartGameBehavior(Bird* bird, GameMap* map, GameInterface* gameInterface)
+	void UpdateOptions(Bird* bird, GameMap* map, GameInterface* gameInterface) override
 	{
-		m_bird = bird;
-		m_map = map;
-		m_interface = gameInterface;
+		bird->Reset();
+		map->Reset();
+		gameInterface->Reset();
 	}
 
-	void UpdateOptions() override
-	{
-		m_bird->Reset();
-		m_map->Reset();
-		m_interface->Reset();
-	}
-
-	void Behavior() override {}
+	void Behavior(Bird* bird, GameMap* map, GameInterface* gameInterface) override {}
 };
 
-class GameplayBehavior : public GameBehavior, public GameEntities
+class GameplayBehavior : public GameBehavior
 {
 public:
-	GameplayBehavior(Bird* bird, GameMap* map, GameInterface* gameInterface)
+	void UpdateOptions(Bird* bird, GameMap* map, GameInterface* gameInterface) override
 	{
-		m_bird = bird;
-		m_map = map;
-		m_interface = gameInterface;
+		gameInterface->SetGameplayUI();
+		map->StartMotion();
+		bird->StartFlapping();
 	}
 
-	void UpdateOptions() override
+	void Behavior(Bird* bird, GameMap* map, GameInterface* gameInterface) override
 	{
-		m_interface->SetGameplayUI();
-		m_map->StartMotion();
-		m_bird->StartFlapping();
-	}
-
-	void Behavior() override
-	{
-		m_bird->Jump();
+		bird->Jump();
 	}
 };
 
-class GameoverBehavior : public GameBehavior, public GameEntities
+class GameoverBehavior : public GameBehavior
 {
 public:
-	GameoverBehavior(Bird* bird, GameMap* map, GameInterface* gameInterface)
+	void UpdateOptions(Bird* bird, GameMap* map, GameInterface* gameInterface) override
 	{
-		m_bird = bird;
-		m_map = map;
-		m_interface = gameInterface;
+		gameInterface->SetGameoverUI();
+		bird->Death();
+		map->StopMotion();
 	}
 
-	void UpdateOptions() override
-	{
-		m_interface->SetGameoverUI();
-		m_bird->Death();
-		m_map->StopMotion();
-	}
+	void Behavior(Bird* bird, GameMap* map, GameInterface* gameInterface) override {}
 
-	void Behavior() override {}
 };
 
 #endif // __GAME_BEHAVIOR_H__
