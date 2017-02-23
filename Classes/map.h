@@ -8,6 +8,8 @@
 class GameMap : public cocos2d::Node
 {
 public:
+	GameMap();
+
 	bool init() override;
 
 	void StopMotion();

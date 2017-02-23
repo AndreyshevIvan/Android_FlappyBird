@@ -34,14 +34,11 @@ bool GameScene::init()
 	m_startBehavior = new StartGameBehavior(m_bird, m_map, m_interface);
 	m_gameplayBehavior = new GameplayBehavior(m_bird, m_map, m_interface);
 	m_gameoverBehavior = new GameoverBehavior(m_bird, m_map, m_interface);
-	m_currBehavior = m_startBehavior;
-
-	m_bird->init();
-	m_map->init();
-	m_interface->init();
 
 	AddListeners();
 	scheduleUpdate();
+
+	SetBehavior(m_startBehavior);
 
 	this->addChild(m_map);
 	this->addChild(m_bird);
@@ -70,7 +67,6 @@ void GameScene::AddListeners()
 
 void GameScene::update(float elapsedTime)
 {
-	m_currBehavior->Behavior();
 	m_interface->Update(m_bird->GetPosition());
 
 	float unreachableHeight = Director::getInstance()->getVisibleSize().height;
@@ -86,31 +82,25 @@ void GameScene::update(float elapsedTime)
 
 bool GameScene::onTouchBegan(Touch* touch, Event* event)
 {
-	m_gameplayBehavior->Behavior();
+	if (m_currBehavior == m_startBehavior)
+	{
+		SetBehavior(m_gameplayBehavior);
+	}
+	else if (m_currBehavior == m_gameoverBehavior && m_interface->IsGameoverTableAppeared())
+	{
+		SetBehavior(m_startBehavior);
+	}
+
+	m_currBehavior->Behavior();
 
 	return true;
 }
 
-void GameScene::SetBehavior(GameBehaviorStrat* newBehavior)
+void GameScene::SetBehavior(GameBehavior* newBehavior)
 {
-	newBehavior->UpdateOptions();
 	m_currBehavior = newBehavior;
+	m_currBehavior->UpdateOptions();
 }
-
-/*
-void GameScene::StartBehavior()
-{
-	SetNewBehavior(BehaviorType::GAMEPLAY);
-}
-
-void GameScene::GameoverBehavior()
-{
-	if (m_interface->IsGameoverTableAppeared())
-	{
-		SetNewBehavior(BehaviorType::START);
-	}
-}
-*/
 
 bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 {

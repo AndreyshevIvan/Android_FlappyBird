@@ -4,96 +4,9 @@
 #include "cocos2d.h"
 #include "constants.h"
 
-#include "bird.h"
-#include "map.h"
-#include "interface.h"
+#include "gameBehavior.h"
+#include "gameEntities.h"
 #include "sound.h"
-
-class GameEntities
-{
-public:
-	Bird* m_bird;
-	GameMap* m_map;
-	GameInterface* m_interface;
-
-};
-
-class GameBehaviorStrat
-{
-public:
-	virtual void UpdateOptions() = 0;
-	virtual void Behavior() = 0;
-
-};
-
-class StartGameBehavior : public GameBehaviorStrat, public GameEntities
-{
-public:
-	StartGameBehavior(Bird* bird, GameMap* map, GameInterface* gameInterface)
-	{
-		m_bird = bird;
-		m_map = map;
-		m_interface = gameInterface;
-	}
-
-	void UpdateOptions() override
-	{
-		m_bird->Reset();
-		m_map->Reset();
-		m_interface->Reset();
-	}
-
-	void Behavior() override
-	{
-
-	}
-};
-
-class GameplayBehavior : public GameBehaviorStrat, public GameEntities
-{
-public:
-	GameplayBehavior(Bird* bird, GameMap* map, GameInterface* gameInterface)
-	{
-		m_bird = bird;
-		m_map = map;
-		m_interface = gameInterface;
-	}
-
-	void UpdateOptions() override
-	{
-		m_interface->SetGameplayUI();
-		m_map->StartMotion();
-		m_bird->StartFlapping();
-	}
-
-	void Behavior() override
-	{
-		m_bird->Jump();
-	}
-};
-
-class GameoverBehavior : public GameBehaviorStrat, public GameEntities
-{
-public:
-	GameoverBehavior(Bird* bird, GameMap* map, GameInterface* gameInterface)
-	{
-		m_bird = bird;
-		m_map = map;
-		m_interface = gameInterface;
-	}
-	
-	void UpdateOptions() override
-	{
-		m_interface->SetGameoverUI();
-		m_bird->Death();
-		m_map->StopMotion();
-	}
-
-	void Behavior() override
-	{
-
-	}
-};
 
 class GameScene : public cocos2d::Layer, public GameEntities
 {
@@ -103,11 +16,11 @@ public:
 	CREATE_FUNC(GameScene);
 
 private:
-	GameBehaviorStrat* m_currBehavior;
+	GameBehavior* m_currBehavior;
 
-	GameBehaviorStrat* m_startBehavior;
-	GameBehaviorStrat* m_gameplayBehavior;
-	GameBehaviorStrat* m_gameoverBehavior;
+	GameBehavior* m_startBehavior;
+	GameBehavior* m_gameplayBehavior;
+	GameBehavior* m_gameoverBehavior;
 
 	void AddListeners();
 
@@ -117,7 +30,7 @@ private:
 	void update(float elapsedTime);
 	void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *pEvent) override;
 	
-	void SetBehavior(GameBehaviorStrat* newBehavior);
+	void SetBehavior(GameBehavior* newBehavior);
 
 };
 

@@ -16,6 +16,8 @@ enum struct BirdStatus
 class Bird : public cocos2d::Node
 {
 public:
+	Bird();
+
 	bool init() override;
 
 	void update(float dt) override;

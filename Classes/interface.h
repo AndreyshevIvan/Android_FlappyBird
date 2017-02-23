@@ -9,6 +9,8 @@
 class GameInterface : public cocos2d::Node
 {
 public:
+	GameInterface();
+
 	bool init() override;
 
 	void AddPoint();

@@ -19,6 +19,11 @@ const float UPPER_SCREEN_TUBE_THRESHOLD = 0.90f;
 
 const float TUBES_SPEED = 350;
 
+GameMap::GameMap()
+{
+	init();
+}
+
 bool GameMap::init()
 {
 	Size winSize = Director::getInstance()->getVisibleSize();

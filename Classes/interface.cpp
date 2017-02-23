@@ -22,6 +22,11 @@ const int MEDALS_COUNT = 4;
 
 const char* HIGHTSCORE_KEY = "FB_BY_IVAN_HIGHTSCORE";
 
+GameInterface::GameInterface()
+{
+	init();
+}
+
 bool GameInterface::init()
 {
 	Size winSize = Director::getInstance()->getVisibleSize();

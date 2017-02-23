@@ -15,6 +15,11 @@ const float UP_ROT_ANGALE = -50;
 const float DOWN_ROT_ANGLE = 90;
 const float DOWN_ROT_SPEED = 280;
 
+Bird::Bird()
+{
+	init();
+}
+
 bool Bird::init()
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
