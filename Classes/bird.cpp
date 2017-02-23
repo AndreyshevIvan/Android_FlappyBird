@@ -7,9 +7,9 @@ const int BIRD_Z_INDEX = 10;
 const int BIRD_FRAMES = 4;
 const float BIRD_ANIMATE_FPS = 10;
 
-const float RADIUS_FACTOR = 0.85f;
+const float RADIUS_FACTOR = 0.9f;
 const float BIRD_POS_FACTOR_X = 0.2f;
-const float BIRD_JUMP_VELOCITY = 1000;
+const float BIRD_JUMP_VELOCITY = 950;
 
 const float UP_ROT_ANGALE = -50;
 const float DOWN_ROT_ANGLE = 90;

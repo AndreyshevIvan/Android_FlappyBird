@@ -7,7 +7,6 @@ const float WORLD_GRAVITY = 2400;
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::createWithPhysics();
-	//scene->getPhysicsWorld()->setDebugDrawMask(3);
 	scene->getPhysicsWorld()->setGravity(Vect(0, -WORLD_GRAVITY));
 
 	auto layer = GameScene::create();
@@ -32,14 +31,17 @@ bool GameScene::init()
 	m_map = new GameMap();
 	m_interface = new GameInterface();
 
+	m_startBehavior = new StartGameBehavior(m_bird, m_map, m_interface);
+	m_gameplayBehavior = new GameplayBehavior(m_bird, m_map, m_interface);
+	m_gameoverBehavior = new GameoverBehavior(m_bird, m_map, m_interface);
+	m_currBehavior = m_startBehavior;
+
 	m_bird->init();
 	m_map->init();
 	m_interface->init();
 
 	AddListeners();
 	scheduleUpdate();
-
-	SetNewBehavior(BehaviorType::START);
 
 	this->addChild(m_map);
 	this->addChild(m_bird);
@@ -60,7 +62,7 @@ void GameScene::AddListeners()
 
 	auto pKeybackListener = EventListenerKeyboard::create();
 	pKeybackListener->onKeyReleased = CC_CALLBACK_2(GameScene::onKeyReleased, this);
-	
+
 	_eventDispatcher->addEventListenerWithFixedPriority(touchListener, -1);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(collideListener, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(pKeybackListener, this);
@@ -68,6 +70,7 @@ void GameScene::AddListeners()
 
 void GameScene::update(float elapsedTime)
 {
+	m_currBehavior->Behavior();
 	m_interface->Update(m_bird->GetPosition());
 
 	float unreachableHeight = Director::getInstance()->getVisibleSize().height;
@@ -77,51 +80,27 @@ void GameScene::update(float elapsedTime)
 		birdHeight > unreachableHeight ||
 		birdHeight < 0)
 	{
-		SetNewBehavior(BehaviorType::GAMEOVER);
+		SetBehavior(m_gameoverBehavior);
 	}
 }
 
-
 bool GameScene::onTouchBegan(Touch* touch, Event* event)
 {
-	PlayBehavior(m_behavior);
+	m_gameplayBehavior->Behavior();
+
 	return true;
 }
 
-void GameScene::ChangeBehavior(BehaviorType const& newBehavior)
+void GameScene::SetBehavior(GameBehaviorStrat* newBehavior)
 {
-	m_behavior = newBehavior;
+	newBehavior->UpdateOptions();
+	m_currBehavior = newBehavior;
 }
 
-void GameScene::SetStartBehaviorOptions()
-{
-	m_bird->Reset();
-	m_map->Reset();
-	m_interface->Reset();
-}
-
-void GameScene::SetGameplayBehaviorOptions()
-{
-	m_interface->SetGameplayUI();
-	m_map->StartMotion();
-	m_bird->StartFlapping();
-}
-
-void GameScene::SetGameoverBehaviorOptions()
-{
-	m_interface->SetGameoverUI();
-	m_bird->Death();
-	m_map->StopMotion();
-}
-
+/*
 void GameScene::StartBehavior()
 {
 	SetNewBehavior(BehaviorType::GAMEPLAY);
-}
-
-void GameScene::GameplayBehavior()
-{
-	m_bird->Jump();
 }
 
 void GameScene::GameoverBehavior()
@@ -129,59 +108,6 @@ void GameScene::GameoverBehavior()
 	if (m_interface->IsGameoverTableAppeared())
 	{
 		SetNewBehavior(BehaviorType::START);
-	}
-}
-
-/*
-bool GameScene::onTouchBegan(Touch* touch, Event* event)
-{
-	switch (m_behavior)
-	{
-	case BehaviorType::GAMEPLAY:
-		m_bird->Jump();
-		break;
-
-	case BehaviorType::START:
-		SetNewBehavior(BehaviorType::GAMEPLAY);
-		break;
-
-	case BehaviorType::GAMEOVER:
-		if (m_interface->IsGameoverTableAppeared())
-		{
-			SetNewBehavior(BehaviorType::START);
-		}
-		break;
-	default:
-		break;
-	}
-
-	return true;
-}
-
-void GameScene::SetBehavoir(BehaviorType newBehavior)
-{
-
-	switch (newBehavior)
-	{
-	case BehaviorType::START:
-		m_bird->Reset();
-		m_map->Reset();
-		m_interface->Reset();
-		break;
-
-	case BehaviorType::GAMEPLAY:
-		m_interface->SetGameplayUI();
-		m_map->StartMotion();
-		m_bird->StartFlapping();
-		break;
-
-	case BehaviorType::GAMEOVER:
-		m_interface->SetGameoverUI();
-		m_bird->Death();
-		m_map->StopMotion();
-		break;
-	default:
-		break;
 	}
 }
 */
@@ -194,11 +120,11 @@ bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 	if ((bitMaskA == MAP_BITMASK && bitMaskB == BIRD_BITMASK) ||
 		(bitMaskA == BIRD_BITMASK && bitMaskB == MAP_BITMASK))
 	{
-		SetNewBehavior(BehaviorType::GAMEOVER);
+		SetBehavior(m_gameoverBehavior);
 		return true;
 	}
 	else if ((bitMaskA == BIRD_BITMASK && bitMaskB == POINT_BITMASK) ||
-			(bitMaskA == POINT_BITMASK && bitMaskB == BIRD_BITMASK))
+		(bitMaskA == POINT_BITMASK && bitMaskB == BIRD_BITMASK))
 	{
 		m_interface->AddPoint();
 		return false;
