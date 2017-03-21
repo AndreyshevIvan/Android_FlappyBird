@@ -1,5 +1,6 @@
 #include "interface.h"
 #include "SimpleAudioEngine.h"
+#include <iostream>
 
 USING_NS_CC;
 
@@ -23,11 +24,6 @@ const int MEDALS_COUNT = 4;
 const char* HIGHTSCORE_KEY = "FB_BY_IVAN_HIGHTSCORE";
 
 GameInterface::GameInterface()
-{
-	init();
-}
-
-bool GameInterface::init()
 {
 	Size winSize = Director::getInstance()->getVisibleSize();
 	Point center = Point(winSize * 0.5f);
@@ -65,8 +61,6 @@ bool GameInterface::init()
 	UserDefault* memory = UserDefault::getInstance();
 	auto highScore = memory->getIntegerForKey(HIGHTSCORE_KEY, 0);
 	memory->flush();
-
-	return true;
 }
 
 void GameInterface::onEnter()
@@ -132,7 +126,7 @@ void GameInterface::SetGameoverUI()
 	m_medal->runAction(easeCircle->clone());
 	m_newHighScoreTab->runAction(easeCircle->clone());
 
-	m_score->setString(PointsToStr(m_pointsCount));
+	m_score->setString(std::to_string(m_pointsCount));
 	m_bestScore->setString(GetHighScoreStr());
 }
 
@@ -141,6 +135,7 @@ void GameInterface::ResetUI()
 	Point center = Director::getInstance()->getVisibleSize() * 0.5f;
 
 	m_points->setVisible(false);
+	m_points->setString("0");
 
 	m_score->setVisible(false);
 	m_scoreTab->setVisible(false);
@@ -200,7 +195,7 @@ std::string GameInterface::GetHighScoreStr()
 	UserDefault* memory = UserDefault::getInstance();
 	auto highScore = memory->getIntegerForKey(HIGHTSCORE_KEY, 0);
 
-	return PointsToStr(highScore);
+	return std::to_string(highScore);
 }
 
 void GameInterface::Reset()
@@ -209,9 +204,8 @@ void GameInterface::Reset()
 	m_pointsCount = 0;
 }
 
-void GameInterface::Update(Vec2 const& birdPosition)
+void GameInterface::UpdateHelpPanel(Vec2 const& birdPosition)
 {
-	m_points->setString(PointsToStr(m_pointsCount));
 	UpdateIdleInterface(birdPosition);
 }
 
@@ -223,7 +217,8 @@ bool GameInterface::IsGameoverTableAppeared()
 void GameInterface::AddPoint()
 {
 	m_audio.Point();
-	m_pointsCount = (m_pointsCount - POINTS_MAX == 0) ? 0 : m_pointsCount + 1;
+	m_pointsCount++;
+	m_points->setString(std::to_string(m_pointsCount));
 }
 
 unsigned GameInterface::GetPointsCount()
@@ -238,13 +233,4 @@ void GameInterface::UpdateIdleInterface(Vec2 const& birdPosition)
 
 	m_guide->setPosition(Point(guidePosX, birdPosition.y));
 	m_gameName->setPosition(Point(namePosX, birdPosition.y + GAMENAME_OFFSET.y));
-}
-
-std::string PointsToStr(unsigned points)
-{
-	std::stringstream stream;
-	stream << points;
-	std::string pointsStr(stream.str());
-
-	return pointsStr;
 }

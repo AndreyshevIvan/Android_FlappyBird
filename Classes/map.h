@@ -10,8 +10,6 @@ class GameMap : public cocos2d::Node
 public:
 	GameMap();
 
-	bool init() override;
-
 	void StopMotion();
 	void StartMotion();
 	void update(float elapsedTime) override;

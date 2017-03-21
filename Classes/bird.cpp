@@ -17,11 +17,6 @@ const float DOWN_ROT_SPEED = 280;
 
 Bird::Bird()
 {
-	init();
-}
-
-bool Bird::init()
-{
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Point center = Point(visibleSize * 0.5f);
 
@@ -38,8 +33,6 @@ bool Bird::init()
 	m_body->setPhysicsBody(physBody);
 
 	Reset();
-
-	return true;
 }
 
 void Bird::onEnter()
@@ -67,11 +60,8 @@ void Bird::update(float dt)
 	{
 		RotateBird(dt);
 	}
-
-	if (m_status != BirdStatus::DEAD)
-	{
-		FlappingAnimate(dt);
-	}
+	
+	FlappingAnimate(dt);
 }
 
 void Bird::Idle(float elapsedTime)
@@ -118,24 +108,27 @@ void Bird::Death()
 
 void Bird::FlappingAnimate(float elapsedTime)
 {
-	m_flappingAnimTime += elapsedTime;
-
-	float frameWidth = m_body->getContentSize().width;
-	float frameHeight = m_body->getContentSize().height;
-	int currFrame = m_body->getTextureRect().getMinX() / frameWidth;
-
-	if (m_flappingAnimTime >= 1 / BIRD_ANIMATE_FPS)
+	if (m_status != BirdStatus::DEAD)
 	{
-		m_flappingAnimTime = 0;
-		currFrame++;
+		m_flappingAnimTime += elapsedTime;
 
-		if (currFrame == BIRD_FRAMES - 1)
+		float frameWidth = m_body->getContentSize().width;
+		float frameHeight = m_body->getContentSize().height;
+		int currFrame = m_body->getTextureRect().getMinX() / frameWidth;
+
+		if (m_flappingAnimTime >= 1 / BIRD_ANIMATE_FPS)
 		{
-			currFrame = 0;
-		}
+			m_flappingAnimTime = 0;
+			currFrame++;
 
-		Rect textureArea(currFrame * frameWidth, 0, frameWidth, frameHeight);
-		m_body->setTextureRect(textureArea);
+			if (currFrame == BIRD_FRAMES - 1)
+			{
+				currFrame = 0;
+			}
+
+			Rect textureArea(currFrame * frameWidth, 0, frameWidth, frameHeight);
+			m_body->setTextureRect(textureArea);
+		}
 	}
 }
 

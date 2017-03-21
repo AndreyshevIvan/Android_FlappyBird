@@ -29,7 +29,7 @@ private:
 
 	void AddListeners();
 
-	bool IsBirdCollideAny(cocos2d::PhysicsContact& contact);
+	bool IsBirdContactWithAny(cocos2d::PhysicsContact& contact);
 
 	bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) override;
 	void update(float elapsedTime);

@@ -4,19 +4,16 @@
 #include "cocos2d.h"
 #include "constants.h"
 #include "sound.h"
-#include <sstream>
 
 class GameInterface : public cocos2d::Node
 {
 public:
 	GameInterface();
 
-	bool init() override;
-
 	void AddPoint();
 	unsigned GetPointsCount();
 
-	void Update(cocos2d::Vec2 const& birdPosition);
+	void UpdateHelpPanel(cocos2d::Vec2 const& birdPosition);
 
 	void SetStartUI();
 	void SetGameplayUI();
@@ -53,7 +50,5 @@ private:
 	void ResetUI();
 
 };
-
-std::string PointsToStr(unsigned points);
 
 #endif // __INTERFACE_H__

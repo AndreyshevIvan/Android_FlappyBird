@@ -11,51 +11,47 @@
 class GameBehavior
 {
 public:
-	virtual void UpdateOptions(Bird* bird, GameMap* map, GameInterface* gameInterface) = 0;
-	virtual void Behavior(Bird* bird, GameMap* map, GameInterface* gameInterface) = 0;
+	void Init(Bird* bird, GameMap* map, GameInterface* gameInterface);
 
+	virtual void Start() = 0;
+	virtual void Update(float elapsedTime) = 0;
+	virtual void OnTouchEvent() {};
+	virtual bool IsOnTouchChange() { return false; };
+	
+	virtual void CollideWithPointEvent() {};
+
+protected: 
+	Bird* m_bird;
+	GameMap* m_map;
+	GameInterface* m_interface;
 };
 
 class StartGameBehavior : public GameBehavior
 {
 public:
-	void UpdateOptions(Bird* bird, GameMap* map, GameInterface* gameInterface) override
-	{
-		bird->Reset();
-		map->Reset();
-		gameInterface->Reset();
-	}
+	void Start() override;
+	void Update(float elapsedTime) override;
+	bool IsOnTouchChange() override;
 
-	void Behavior(Bird* bird, GameMap* map, GameInterface* gameInterface) override {}
 };
 
 class GameplayBehavior : public GameBehavior
 {
 public:
-	void UpdateOptions(Bird* bird, GameMap* map, GameInterface* gameInterface) override
-	{
-		gameInterface->SetGameplayUI();
-		map->StartMotion();
-		bird->StartFlapping();
-	}
+	void Start() override;
+	void Update(float elapsedTime) override {};
+	void OnTouchEvent() override;
 
-	void Behavior(Bird* bird, GameMap* map, GameInterface* gameInterface) override
-	{
-		bird->Jump();
-	}
+	void CollideWithPointEvent() override;
+
 };
 
 class GameoverBehavior : public GameBehavior
 {
 public:
-	void UpdateOptions(Bird* bird, GameMap* map, GameInterface* gameInterface) override
-	{
-		gameInterface->SetGameoverUI();
-		bird->Death();
-		map->StopMotion();
-	}
-
-	void Behavior(Bird* bird, GameMap* map, GameInterface* gameInterface) override {}
+	void Start() override;
+	void Update(float elapsedTime) override {};
+	bool IsOnTouchChange() override;
 
 };
 

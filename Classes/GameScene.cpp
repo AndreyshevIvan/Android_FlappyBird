@@ -35,6 +35,10 @@ bool GameScene::init()
 	m_gameplayBehavior = new GameplayBehavior();
 	m_gameoverBehavior = new GameoverBehavior();
 
+	m_startBehavior->Init(m_bird, m_map, m_interface);
+	m_gameplayBehavior->Init(m_bird, m_map, m_interface);
+	m_gameoverBehavior->Init(m_bird, m_map, m_interface);
+
 	AddListeners();
 	scheduleUpdate();
 
@@ -55,7 +59,7 @@ void GameScene::AddListeners()
 	};
 
 	auto collideListener = EventListenerPhysicsContact::create();
-	collideListener->onContactBegin = CC_CALLBACK_1(GameScene::IsBirdCollideAny, this);
+	collideListener->onContactBegin = CC_CALLBACK_1(GameScene::IsBirdContactWithAny, this);
 
 	auto pKeybackListener = EventListenerKeyboard::create();
 	pKeybackListener->onKeyReleased = CC_CALLBACK_2(GameScene::onKeyReleased, this);
@@ -67,31 +71,21 @@ void GameScene::AddListeners()
 
 void GameScene::update(float elapsedTime)
 {
-	m_interface->Update(m_bird->GetPosition());
-
-	float unreachableHeight = Director::getInstance()->getVisibleSize().height;
-	float birdHeight = m_bird->GetPosition().y;
-
-	if (m_interface->GetPointsCount() == POINTS_MAX ||
-		birdHeight > unreachableHeight ||
-		birdHeight < 0)
-	{
-		SetBehavior(m_gameoverBehavior);
-	}
+	m_currBehavior->Update(elapsedTime);
 }
 
 bool GameScene::onTouchBegan(Touch* touch, Event* event)
 {
+	m_currBehavior->OnTouchEvent();
+
 	if (m_currBehavior == m_startBehavior)
 	{
 		SetBehavior(m_gameplayBehavior);
 	}
-	else if (m_currBehavior == m_gameoverBehavior && m_interface->IsGameoverTableAppeared())
+	else if (m_currBehavior == m_gameoverBehavior && m_currBehavior->IsOnTouchChange())
 	{
 		SetBehavior(m_startBehavior);
 	}
-
-	m_currBehavior->Behavior(m_bird, m_map, m_interface);
 
 	return true;
 }
@@ -99,10 +93,10 @@ bool GameScene::onTouchBegan(Touch* touch, Event* event)
 void GameScene::SetBehavior(GameBehavior* newBehavior)
 {
 	m_currBehavior = newBehavior;
-	m_currBehavior->UpdateOptions(m_bird, m_map, m_interface);
+	m_currBehavior->Start();
 }
 
-bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
+bool GameScene::IsBirdContactWithAny(PhysicsContact& contact)
 {
 	auto bitMaskA = contact.getShapeA()->getCollisionBitmask();
 	auto bitMaskB = contact.getShapeB()->getCollisionBitmask();
@@ -116,8 +110,7 @@ bool GameScene::IsBirdCollideAny(PhysicsContact& contact)
 	else if ((bitMaskA == BIRD_BITMASK && bitMaskB == POINT_BITMASK) ||
 		(bitMaskA == POINT_BITMASK && bitMaskB == BIRD_BITMASK))
 	{
-		m_interface->AddPoint();
-		return false;
+		m_currBehavior->CollideWithPointEvent();
 	}
 
 	return false;

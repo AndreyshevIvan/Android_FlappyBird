@@ -21,11 +21,6 @@ const float TUBES_SPEED = 350;
 
 GameMap::GameMap()
 {
-	init();
-}
-
-bool GameMap::init()
-{
 	Size winSize = Director::getInstance()->getVisibleSize();
 	Vec2 center = Vec2(winSize * 0.5f);
 
@@ -53,8 +48,6 @@ bool GameMap::init()
 	InitPointsBodies();
 
 	Reset();
-
-	return true;
 }
 
 void GameMap::InitGround()

@@ -1,5 +1,5 @@
-#ifndef __BIRD_SCENE_H__
-#define __BIRD_SCENE_H__
+#ifndef __BIRD_H__
+#define __BIRD_H__
 
 #include "cocos2d.h"
 #include "constants.h"
@@ -17,8 +17,6 @@ class Bird : public cocos2d::Node
 {
 public:
 	Bird();
-
-	bool init() override;
 
 	void update(float dt) override;
 
@@ -51,4 +49,4 @@ private:
 
 };
 
-#endif // __BIRD_SCENE_H__
+#endif // __BIRD_H__
